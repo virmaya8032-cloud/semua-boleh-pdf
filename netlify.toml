@@ -1,0 +1,16 @@
+# Konfigurasi penggunaan Netlify untuk frontend Semua Boleh PDF.
+# Tetapkan "Base directory" = frontend di Netlify, atau gunakan fail ini di root repo.
+
+[build]
+  base = "frontend"
+  command = "npm install && npm run build"
+  publish = "frontend/dist"
+
+# Sokongan penghalaan SPA (React Router) — semua laluan diarahkan ke index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Nota: Tetapkan pemboleh ubah persekitaran VITE_API_URL dalam
+# Netlify (Site settings -> Environment variables) kepada URL backend Render anda.

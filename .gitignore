@@ -1,0 +1,28 @@
+# Kebergantungan
+node_modules/
+**/node_modules/
+
+# Persekitaran
+.env
+**/.env
+!**/.env.example
+
+# Binaan
+frontend/dist/
+frontend/.vite/
+
+# Fail sementara backend
+backend/uploads/*
+backend/outputs/*
+!backend/uploads/.gitkeep
+!backend/outputs/.gitkeep
+
+# Log
+*.log
+npm-debug.log*
+
+# Sistem
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
