@@ -13,7 +13,7 @@ body {
 h1, h2, h3, h4 { @apply font-papar; }
 
 /* Fokus papan kekunci yang jelas (kebolehcapaian) */
-:focus-visible { outline: 2px solid #E23B3B; outline-offset: 2px; }
+:focus-visible { outline: 2px solid #E12128; outline-offset: 2px; }
 
 /* Hormati keutamaan gerakan berkurang */
 @media (prefers-reduced-motion: reduce) {

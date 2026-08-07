@@ -16,14 +16,14 @@ export const TOOLS = [
   // ---------- Pengurusan PDF ----------
   {
     slug: "gabung-pdf", nama: "Gabung PDF", kategori: "urus", icon: "Combine",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Satukan beberapa fail PDF menjadi satu dokumen.",
     penuh: "Satukan beberapa fail PDF menjadi satu dokumen dengan susunan pilihan anda.",
     accept: ".pdf", multiple: true, op: "gabung",
   },
   {
     slug: "pisah-pdf", nama: "Pisah PDF", kategori: "urus", icon: "Scissors",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Pisahkan satu PDF kepada beberapa fail.",
     penuh: "Pisahkan dokumen PDF mengikut julat halaman menjadi fail berasingan.",
     accept: ".pdf", multiple: false, op: "pisah",
@@ -31,7 +31,7 @@ export const TOOLS = [
   },
   {
     slug: "padam-halaman", nama: "Padam Halaman PDF", kategori: "urus", icon: "FileMinus",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Buang halaman yang tidak dikehendaki.",
     penuh: "Buang halaman tertentu daripada dokumen PDF anda.",
     accept: ".pdf", multiple: false, op: "padam-halaman",
@@ -39,7 +39,7 @@ export const TOOLS = [
   },
   {
     slug: "ekstrak-halaman", nama: "Ekstrak Halaman PDF", kategori: "urus", icon: "FileOutput",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Ambil halaman tertentu sebagai PDF baharu.",
     penuh: "Ekstrak halaman yang dipilih menjadi satu dokumen PDF baharu.",
     accept: ".pdf", multiple: false, op: "ekstrak-halaman",
@@ -47,7 +47,7 @@ export const TOOLS = [
   },
   {
     slug: "susun-halaman", nama: "Susun Halaman PDF", kategori: "urus", icon: "ArrowDownUp",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Susun semula urutan halaman.",
     penuh: "Tetapkan semula urutan halaman mengikut susunan yang anda mahu.",
     accept: ".pdf", multiple: false, op: "susun-halaman",
@@ -55,7 +55,7 @@ export const TOOLS = [
   },
   {
     slug: "putar-pdf", nama: "Putar PDF", kategori: "urus", icon: "RotateCw",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Putarkan halaman 90, 180 atau 270 darjah.",
     penuh: "Putarkan semua halaman dokumen PDF mengikut sudut pilihan.",
     accept: ".pdf", multiple: false, op: "putar",
@@ -67,7 +67,7 @@ export const TOOLS = [
   },
   {
     slug: "nombor-halaman", nama: "Tambah Nombor Halaman", kategori: "urus", icon: "Hash",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Letakkan nombor pada setiap halaman.",
     penuh: "Tambah nombor halaman pada dokumen PDF di kedudukan pilihan anda.",
     accept: ".pdf", multiple: false, op: "nombor-halaman",
@@ -79,7 +79,7 @@ export const TOOLS = [
   },
   {
     slug: "tera-air", nama: "Tambah Tera Air", kategori: "urus", icon: "Stamp",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Letakkan teks tera air pada halaman.",
     penuh: "Tambah teks tera air (watermark) merentasi setiap halaman PDF.",
     accept: ".pdf", multiple: false, op: "tera-air",
@@ -87,7 +87,7 @@ export const TOOLS = [
   },
   {
     slug: "potong-pdf", nama: "Potong PDF", kategori: "urus", icon: "Crop",
-    warna: "#e23b3b",
+    warna: "#e12128",
     ringkas: "Potong margin halaman PDF.",
     penuh: "Potong (crop) margin setiap halaman mengikut peratus pilihan.",
     accept: ".pdf", multiple: false, op: "potong",

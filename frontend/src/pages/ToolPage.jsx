@@ -21,7 +21,7 @@ export default function ToolPage() {
   const [ralat, setRalat] = useState("");
 
   const Icon = useMemo(() => (tool ? ikonAlat(tool.icon) : null), [tool]);
-  const warna = tool?.warna || "#E23B3B";
+  const warna = tool?.warna || "#E12128";
 
   // SEO: kemas kini tajuk & penerangan halaman ikut alat
   useEffect(() => {

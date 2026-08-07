@@ -3,7 +3,7 @@ import { ikonAlat } from "../config/icons.js";
 
 export function ToolCard({ tool }) {
   const Icon = ikonAlat(tool.icon);
-  const warna = tool.warna || "#E23B3B";
+  const warna = tool.warna || "#E12128";
   return (
     <Link
       to={`/alat/${tool.slug}`}

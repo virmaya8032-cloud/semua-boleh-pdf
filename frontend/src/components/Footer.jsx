@@ -36,11 +36,7 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
-              <svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true">
-                <rect x="9" y="5" width="26" height="34" rx="4" fill="#E23B3B" />
-                <rect x="13" y="9" width="26" height="34" rx="4" fill="#1F2430" />
-                <path d="M18 20h9M18 26h16M18 32h13" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
-              </svg>
+              <img src="/logo-mark.jpg" alt="Semua Boleh PDF" className="h-9 w-9 rounded-lg bg-white object-contain p-0.5" />
               <span className="font-papar font-extrabold">
                 Semua Boleh <span className="text-merah">PDF</span>
               </span>

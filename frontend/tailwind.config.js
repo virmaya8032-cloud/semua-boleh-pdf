@@ -5,13 +5,13 @@ export default {
     extend: {
       colors: {
         merah: {
-          DEFAULT: "#E23B3B",
+          DEFAULT: "#E12128",
           600: "#D12C2C",
           700: "#B71F1F",
           50: "#FDECEC",
         },
         arang: {
-          DEFAULT: "#1F2430",
+          DEFAULT: "#1A2749",
           700: "#2B3040",
           500: "#4B5162",
         },

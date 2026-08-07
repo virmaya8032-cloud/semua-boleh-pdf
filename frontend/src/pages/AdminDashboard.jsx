@@ -14,7 +14,7 @@ function saizManusia(bait) {
   return `${(bait / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function Stat({ Icon, label, nilai, warna = "#E23B3B" }) {
+function Stat({ Icon, label, nilai, warna = "#E12128" }) {
   return (
     <div className="kad flex items-center gap-4 p-5">
       <span className="grid h-11 w-11 place-items-center rounded-xl" style={{ backgroundColor: `${warna}14`, color: warna }}>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
 
           <div className="grid gap-4 sm:grid-cols-3">
             <Stat Icon={CheckCircle2} label="Berjaya" nilai={stat.berjaya} warna="#16a34a" />
-            <Stat Icon={Ban} label="Gagal" nilai={stat.gagal} warna="#E23B3B" />
+            <Stat Icon={Ban} label="Gagal" nilai={stat.gagal} warna="#E12128" />
             <Stat Icon={CalendarDays} label="7 hari" nilai={stat.minggu_ini} warna="#d97706" />
           </div>
 

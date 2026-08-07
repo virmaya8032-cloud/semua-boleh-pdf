@@ -5,12 +5,8 @@ import { useAuth } from "../context/AuthContext.jsx";
 
 function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Semua Boleh PDF">
-      <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
-        <rect x="9" y="5" width="26" height="34" rx="4" fill="#E23B3B" />
-        <rect x="13" y="9" width="26" height="34" rx="4" fill="#1F2430" />
-        <path d="M18 20h9M18 26h16M18 32h13" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
+    <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="Semua Boleh PDF">
+      <img src="/logo-mark.jpg" alt="Semua Boleh PDF" className="h-10 w-10 rounded-lg object-contain" />
       <span className="font-papar font-extrabold text-lg leading-none">
         Semua Boleh <span className="text-merah">PDF</span>
       </span>
