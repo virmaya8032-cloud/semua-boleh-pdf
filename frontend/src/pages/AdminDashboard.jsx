@@ -4,7 +4,7 @@ import { useToast } from "../components/Toast.jsx";
 import { Loader } from "../components/ui.jsx";
 import {
   Users, FileStack, CalendarDays, TrendingUp, Download, Search,
-  Ban, CheckCircle2, Trash2, Server, Database, RefreshCw,
+  Ban, CheckCircle2, Trash2, Server, Database, RefreshCw, Mail, MailOpen,
 } from "lucide-react";
 
 function saizManusia(bait) {
@@ -39,19 +39,24 @@ export default function AdminDashboard() {
   const [aktiviti, setAktiviti] = useState([]);
   const [tapisAlat, setTapisAlat] = useState("");
   const [sistem, setSistem] = useState(null);
+  const [mesej, setMesej] = useState([]);
+  const [belumDibaca, setBelumDibaca] = useState(0);
 
   const muatSemua = async () => {
     try {
-      const [s, p, a, sys] = await Promise.all([
+      const [s, p, a, sys, m] = await Promise.all([
         api.get("/pentadbir/statistik"),
         api.get("/pentadbir/pengguna"),
         api.get("/pentadbir/aktiviti"),
         api.get("/pentadbir/status-sistem"),
+        api.get("/pentadbir/mesej"),
       ]);
       setStat(s);
       setPengguna(p.pengguna || []);
       setAktiviti(a.aktiviti || []);
       setSistem(sys);
+      setMesej(m.mesej || []);
+      setBelumDibaca(m.belum_dibaca || 0);
     } catch (e) {
       toast.ralat(e.message);
     } finally {
@@ -89,6 +94,29 @@ export default function AdminDashboard() {
       const data = await api.patch(`/pentadbir/pengguna/${u.id}/status`, { aktif: !u.aktif });
       setPengguna((list) => list.map((x) => (x.id === u.id ? { ...x, aktif: !u.aktif } : x)));
       toast.berjaya(data.mesej);
+    } catch (err) {
+      toast.ralat(err.message);
+    }
+  };
+
+  const tandaMesejDibaca = async (m) => {
+    if (m.dibaca) return;
+    try {
+      await api.patch(`/pentadbir/mesej/${m.id}/dibaca`);
+      setMesej((list) => list.map((x) => (x.id === m.id ? { ...x, dibaca: true } : x)));
+      setBelumDibaca((n) => Math.max(0, n - 1));
+    } catch (err) {
+      toast.ralat(err.message);
+    }
+  };
+
+  const padamMesej = async (m) => {
+    if (!confirm(`Padam mesej daripada ${m.nama}?`)) return;
+    try {
+      await api.del(`/pentadbir/mesej/${m.id}`);
+      setMesej((list) => list.filter((x) => x.id !== m.id));
+      if (!m.dibaca) setBelumDibaca((n) => Math.max(0, n - 1));
+      toast.berjaya("Mesej dipadam.");
     } catch (err) {
       toast.ralat(err.message);
     }
@@ -132,6 +160,7 @@ export default function AdminDashboard() {
     { id: "gambaran", label: "Gambaran Keseluruhan" },
     { id: "pengguna", label: "Pengguna" },
     { id: "aktiviti", label: "Aktiviti" },
+    { id: "mesej", label: belumDibaca > 0 ? `Mesej (${belumDibaca})` : "Mesej" },
     { id: "sistem", label: "Status Sistem" },
   ];
 
@@ -313,6 +342,51 @@ export default function AdminDashboard() {
       )}
 
       {/* Sistem */}
+      {tab === "mesej" && (
+        <div className="mt-6 space-y-3">
+          {mesej.length === 0 ? (
+            <div className="kad p-10 text-center text-sm text-gray-500">
+              Belum ada mesej daripada pengguna.
+            </div>
+          ) : (
+            mesej.map((m) => (
+              <div
+                key={m.id}
+                className={`kad p-5 ${!m.dibaca ? "border-l-4 border-l-merah" : ""}`}
+                onMouseEnter={() => tandaMesejDibaca(m)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-red-50 text-merah">
+                        {m.dibaca ? <MailOpen size={16} /> : <Mail size={16} />}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-arang">{m.nama}</p>
+                        <a href={`mailto:${m.emel}`} className="text-xs text-blue-600 hover:underline">{m.emel}</a>
+                      </div>
+                      {!m.dibaca && (
+                        <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-bold text-merah">Baharu</span>
+                      )}
+                    </div>
+                    <p className="mt-3 whitespace-pre-wrap text-sm text-gray-700">{m.mesej}</p>
+                    <p className="mt-2 text-xs text-gray-400">{new Date(m.dicipta_pada).toLocaleString("ms-MY")}</p>
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    <a href={`mailto:${m.emel}`} className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-50" title="Balas e-mel">
+                      <Mail size={16} />
+                    </a>
+                    <button onClick={() => padamMesej(m)} className="rounded-lg p-1.5 text-merah hover:bg-red-50" title="Padam">
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
       {tab === "sistem" && sistem && (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <div className="kad flex items-center gap-4 p-5">

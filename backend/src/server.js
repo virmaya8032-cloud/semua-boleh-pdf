@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import toolRoutes from "./routes/tools.js";
 import usageRoutes from "./routes/usage.js";
 import adminRoutes from "./routes/admin.js";
+import mesejRoutes from "./routes/mesej.js";
 import { tidakDijumpai, pengendaliRalat } from "./middleware/error.js";
 
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/alat", toolRoutes);
 app.use("/api/penggunaan", usageRoutes);
 app.use("/api/pentadbir", adminRoutes);
+app.use("/api/mesej", mesejRoutes);
 
 // 404 & ralat
 app.use("/api", tidakDijumpai);

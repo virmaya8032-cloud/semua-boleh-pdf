@@ -27,3 +27,15 @@ CREATE INDEX IF NOT EXISTS idx_penggunaan_pengguna ON penggunaan(pengguna_id);
 CREATE INDEX IF NOT EXISTS idx_penggunaan_alat ON penggunaan(alat);
 CREATE INDEX IF NOT EXISTS idx_penggunaan_tarikh ON penggunaan(dicipta_pada);
 CREATE INDEX IF NOT EXISTS idx_pengguna_emel ON pengguna(emel);
+
+-- Mesej daripada borang "Hubungi Kami"
+CREATE TABLE IF NOT EXISTS mesej_hubungi (
+  id            SERIAL PRIMARY KEY,
+  nama          VARCHAR(120) NOT NULL,
+  emel          VARCHAR(255) NOT NULL,
+  mesej         TEXT         NOT NULL,
+  dibaca        BOOLEAN      NOT NULL DEFAULT FALSE,
+  dicipta_pada  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_mesej_tarikh ON mesej_hubungi(dicipta_pada);

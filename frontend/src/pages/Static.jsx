@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShieldCheck, Lock, Trash2, Server, Mail, MessageSquare, ChevronDown } from "lucide-react";
 import { useToast } from "../components/Toast.jsx";
+import { api } from "../services/api.js";
 
 function Shell({ tajuk, sari, children }) {
   return (
@@ -146,14 +147,32 @@ export function FAQ() {
 
 export function Contact() {
   const toast = useToast();
+  const [nama, setNama] = useState("");
+  const [emel, setEmel] = useState("");
+  const [mesej, setMesej] = useState("");
   const [hantar, setHantar] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setHantar(true);
+    try {
+      const data = await api.post("/mesej", { nama, emel, mesej });
+      toast.berjaya(data.mesej || "Mesej anda telah dihantar. Terima kasih!");
+      setNama(""); setEmel(""); setMesej("");
+    } catch (err) {
+      toast.ralat(err.message || "Gagal menghantar mesej.");
+    } finally {
+      setHantar(false);
+    }
+  };
+
   return (
     <Shell tajuk="Hubungi Kami" sari="Ada soalan atau maklum balas? Kami ingin mendengar daripada anda.">
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="kad p-5">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-red-50 text-merah"><Mail size={20} /></span>
           <p className="mt-3 font-papar font-bold">E-mel</p>
-          <p className="text-sm text-gray-500">sokongan@semuabolehpdf.example</p>
+          <p className="text-sm text-gray-500">sokongan@semuabolehpdf.com</p>
         </div>
         <div className="kad p-5">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-red-50 text-merah"><MessageSquare size={20} /></span>
@@ -162,19 +181,13 @@ export function Contact() {
         </div>
       </div>
 
-      <form
-        onSubmit={(e) => { e.preventDefault(); setHantar(true); toast.berjaya("Terima kasih! Mesej anda telah dihantar."); }}
-        className="kad mt-6 space-y-4 p-6"
-      >
+      <form onSubmit={submit} className="kad mt-6 space-y-4 p-6">
         <div className="grid gap-4 sm:grid-cols-2">
-          <input className="medan" placeholder="Nama anda" required />
-          <input type="email" className="medan" placeholder="E-mel anda" required />
+          <input className="medan" placeholder="Nama anda" value={nama} onChange={(e) => setNama(e.target.value)} required />
+          <input type="email" className="medan" placeholder="E-mel anda" value={emel} onChange={(e) => setEmel(e.target.value)} required />
         </div>
-        <textarea className="medan min-h-[120px]" placeholder="Mesej anda…" required />
-        <button className="btn-utama" disabled={hantar}>{hantar ? "Dihantar" : "Hantar Mesej"}</button>
-        <p className="text-xs text-gray-400">
-          Nota: borang ini adalah demonstrasi antara muka dan tidak menghantar e-mel sebenar dalam versi ini.
-        </p>
+        <textarea className="medan min-h-[120px]" placeholder="Mesej anda…" value={mesej} onChange={(e) => setMesej(e.target.value)} required />
+        <button className="btn-utama" disabled={hantar}>{hantar ? "Menghantar…" : "Hantar Mesej"}</button>
       </form>
     </Shell>
   );

@@ -66,7 +66,8 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-gray-100 pt-6 text-center text-sm text-gray-500">
-          © 2026 Semua Boleh PDF. Hak cipta terpelihara.
+          © 2026 Semua Boleh PDF oleh Veramuthu Timrayan. Hak cipta terpelihara.
+          <span className="ml-2 text-gray-400">v1.0</span>
         </div>
       </div>
     </footer>
