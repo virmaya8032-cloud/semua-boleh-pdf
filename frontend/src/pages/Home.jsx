@@ -35,20 +35,25 @@ export default function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-b from-white to-kabus">
-        <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:py-20">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-sm font-semibold text-merah">
+      <section className="relative overflow-hidden bg-gradient-to-b from-arang via-arang to-[#141d38]">
+        {/* Bentuk hiasan halus */}
+        <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-merah/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-1/2 h-40 w-[36rem] -translate-x-1/2 rounded-full bg-merah/10 blur-3xl" />
+
+        <div className="relative mx-auto max-w-4xl px-4 py-16 text-center sm:py-24">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-sm font-semibold text-white ring-1 ring-white/20">
             <Globe size={14} /> Alat PDF dalam Bahasa Melayu
           </span>
-          <h1 className="mt-5 font-papar text-4xl font-extrabold leading-tight text-arang sm:text-5xl">
-            Semua alat PDF yang anda perlukan
+          <h1 className="mt-5 font-papar text-4xl font-extrabold leading-tight text-white sm:text-5xl">
+            Semua alat PDF yang <span className="text-merah">anda perlukan</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-300">
             Gabung, pisah, mampat, tukar dan lindungi fail PDF anda — semuanya percuma, mudah dan
             selamat. Fail anda dipadam secara automatik selepas diproses.
           </p>
 
-          <div className="mx-auto mt-8 flex max-w-xl items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-kad">
+          <div className="mx-auto mt-8 flex max-w-xl items-center gap-2 rounded-2xl border border-white/10 bg-white px-4 py-2 shadow-naik">
             <Search className="text-gray-400" size={20} />
             <input
               value={cari}
@@ -57,6 +62,13 @@ export default function Home() {
               className="w-full bg-transparent py-2 outline-none"
             />
           </div>
+        </div>
+
+        {/* Lengkung pemisah ke bahagian putih */}
+        <div className="relative">
+          <svg viewBox="0 0 1440 60" className="block w-full" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 60 L0 20 Q720 60 1440 20 L1440 60 Z" fill="#F7F8FA" />
+          </svg>
         </div>
       </section>
 
@@ -99,7 +111,7 @@ export default function Home() {
       </section>
 
       {/* Ciri-ciri */}
-      <section className="border-t border-gray-100 bg-white">
+      <section className="border-y border-gray-100 bg-gradient-to-br from-blue-50/50 via-white to-red-50/40">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
           <Ciri Icon={Zap} tajuk="Pantas & Mudah" teks="Muat naik, proses dan muat turun dalam beberapa saat sahaja." />
           <Ciri Icon={ShieldCheck} tajuk="Selamat" teks="Sambungan disulitkan dan pemprosesan dilakukan di pelayan kami." />
