@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { toolBySlug } from "../config/tools.js";
 import { Dropzone, FileList } from "../components/Dropzone.jsx";
@@ -22,6 +22,18 @@ export default function ToolPage() {
 
   const Icon = useMemo(() => (tool ? ikonAlat(tool.icon) : null), [tool]);
   const warna = tool?.warna || "#E23B3B";
+
+  // SEO: kemas kini tajuk & penerangan halaman ikut alat
+  useEffect(() => {
+    if (tool) {
+      document.title = `${tool.nama} — Semua Boleh PDF`;
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc) desc.setAttribute("content", `${tool.penuh || tool.ringkas} Percuma dan mudah, dalam Bahasa Melayu.`);
+    }
+    return () => {
+      document.title = "Semua Boleh PDF — Alat PDF Percuma Dalam Bahasa Melayu";
+    };
+  }, [tool]);
 
   if (!tool) {
     return (

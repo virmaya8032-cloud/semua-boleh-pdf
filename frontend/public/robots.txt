@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Halaman yang tidak perlu diindeks
+Disallow: /papan-pemuka
+Disallow: /pentadbir
+Disallow: /log-masuk
+Disallow: /daftar
+
+Sitemap: https://www.semuabolehpdf.com/sitemap.xml
