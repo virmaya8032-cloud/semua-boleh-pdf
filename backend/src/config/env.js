@@ -20,4 +20,8 @@ export const env = {
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || "admin@semuabolehpdf.my",
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || "admin12345",
   ADMIN_NAMA: process.env.ADMIN_NAMA || "Pentadbir",
+  // E-mel automatik (Resend). Kosong = e-mel dimatikan (borang tetap simpan ke pangkalan data).
+  RESEND_API_KEY: process.env.RESEND_API_KEY || "",
+  EMEL_DARI: process.env.EMEL_DARI || "Semua Boleh PDF <onboarding@resend.dev>",
+  EMEL_PENTADBIR: process.env.EMEL_PENTADBIR || process.env.ADMIN_EMAIL || "",
 };

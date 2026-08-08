@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { emelTerimaKasih, emelPemberitahuanPentadbir } from "../services/emel.js";
 
 const emelSah = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
@@ -19,6 +20,11 @@ export async function hantarMesej(req, res) {
     "INSERT INTO mesej_hubungi (nama, emel, mesej) VALUES ($1, $2, $3)",
     [nama, emel, mesej]
   );
+
+  // Hantar e-mel automatik (tidak menyekat — borang tetap berjaya walau e-mel gagal).
+  emelTerimaKasih(nama, emel, mesej).catch(() => {});
+  emelPemberitahuanPentadbir(nama, emel, mesej).catch(() => {});
+
   res.status(201).json({ mesej: "Mesej anda telah dihantar. Terima kasih!" });
 }
 
