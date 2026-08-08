@@ -1,3 +1,4 @@
+/* global __MASA_BINA__ */
 import { Link } from "react-router-dom";
 
 const lajur = [
@@ -30,6 +31,17 @@ const lajur = [
 ];
 
 export default function Footer() {
+  // Masa build disuntik oleh Vite (vite.config.js) — berubah automatik setiap deploy.
+  const tarikhBina = (() => {
+    try {
+      return new Date(__MASA_BINA__).toLocaleDateString("ms-MY", {
+        day: "numeric", month: "long", year: "numeric",
+      });
+    } catch {
+      return "";
+    }
+  })();
+
   return (
     <footer className="mt-20 border-t border-gray-100 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12">
@@ -67,7 +79,9 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-gray-100 pt-6 text-center text-sm text-gray-500">
           © 2026 Semua Boleh PDF oleh VMY. Hak cipta terpelihara.
-          <span className="ml-2 text-gray-400">v1.0</span>
+          <span className="ml-2 text-gray-400">
+            v1.3 · dikemas kini {tarikhBina}
+          </span>
         </div>
       </div>
     </footer>
