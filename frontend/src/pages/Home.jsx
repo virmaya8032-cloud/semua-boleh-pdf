@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, ShieldCheck, Zap, Trash2, Globe } from "lucide-react";
+import { Search, ShieldCheck, Zap, Trash2, Globe, Quote } from "lucide-react";
 import { TOOLS, CATEGORIES, toolsByCategory } from "../config/tools.js";
 import { ToolCard } from "../components/ToolCard.jsx";
+import { api } from "../services/api.js";
 
 function Ciri({ Icon, tajuk, teks }) {
   return (
@@ -20,6 +21,13 @@ function Ciri({ Icon, tajuk, teks }) {
 
 export default function Home() {
   const [cari, setCari] = useState("");
+  const [testimoni, setTestimoni] = useState([]);
+
+  useEffect(() => {
+    api.get("/mesej/testimoni")
+      .then((d) => setTestimoni(d.testimoni || []))
+      .catch(() => {});
+  }, []);
 
   const carian = useMemo(() => {
     const q = cari.trim().toLowerCase();
@@ -119,6 +127,37 @@ export default function Home() {
           <Ciri Icon={Globe} tajuk="100% Bahasa Melayu" teks="Antara muka sepenuhnya dalam Bahasa Melayu untuk semua." />
         </div>
       </section>
+
+      {/* Testimoni (hanya jika ada yang diluluskan) */}
+      {testimoni.length > 0 && (
+        <section className="border-t border-gray-100 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-14">
+            <div className="text-center">
+              <h2 className="font-papar text-2xl font-bold text-arang">Apa kata pengguna kami</h2>
+              <p className="mt-2 text-gray-500">Maklum balas sebenar daripada pengguna Semua Boleh PDF.</p>
+            </div>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {testimoni.map((t, i) => (
+                <div key={i} className="kad relative p-6">
+                  <Quote className="absolute right-5 top-5 text-merah/20" size={28} />
+                  <p className="text-gray-700">{t.mesej}</p>
+                  <div className="mt-4 flex items-center gap-3">
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-merah text-sm font-bold text-white">
+                      {t.nama?.[0]?.toUpperCase() || "P"}
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-arang">{t.nama}</p>
+                      <p className="text-xs text-gray-400">
+                        {new Date(t.dicipta_pada).toLocaleDateString("ms-MY", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA daftar */}
       <section className="mx-auto max-w-6xl px-4 py-14">

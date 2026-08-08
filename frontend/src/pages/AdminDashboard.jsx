@@ -122,6 +122,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const tukarDipapar = async (m) => {
+    try {
+      const data = await api.patch(`/pentadbir/mesej/${m.id}/dipapar`, { dipapar: !m.dipapar });
+      setMesej((list) => list.map((x) => (x.id === m.id ? { ...x, dipapar: !m.dipapar } : x)));
+      toast.berjaya(data.mesej);
+    } catch (err) {
+      toast.ralat(err.message);
+    }
+  };
+
   const padamPengguna = async (u) => {
     if (!confirm(`Padam pengguna ${u.nama} (${u.emel})? Tindakan ini kekal.`)) return;
     try {
@@ -373,6 +383,13 @@ export default function AdminDashboard() {
                     <p className="mt-2 text-xs text-gray-400">{new Date(m.dicipta_pada).toLocaleString("ms-MY")}</p>
                   </div>
                   <div className="flex shrink-0 gap-2">
+                    <button
+                      onClick={() => tukarDipapar(m)}
+                      className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold ${m.dipapar ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                      title={m.dipapar ? "Sedang dipapar di laman utama — klik untuk sembunyi" : "Luluskan untuk papar sebagai testimoni"}
+                    >
+                      {m.dipapar ? "✓ Dipapar" : "Luluskan"}
+                    </button>
                     <a href={`mailto:${m.emel}`} className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-50" title="Balas e-mel">
                       <Mail size={16} />
                     </a>

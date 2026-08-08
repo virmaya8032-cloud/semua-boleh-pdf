@@ -4,7 +4,7 @@ import {
   statistik, senaraiPengguna, aktiviti, eksportCsv,
   tukarStatusPengguna, padamPengguna, statusSistem,
 } from "../controllers/adminController.js";
-import { senaraiMesej, tandaDibaca, padamMesej } from "../controllers/mesejController.js";
+import { senaraiMesej, tandaDibaca, padamMesej, tukarDipapar } from "../controllers/mesejController.js";
 
 const r = Router();
 r.use(perluPentadbir);
@@ -18,4 +18,5 @@ r.delete("/pengguna/:id", padamPengguna);
 r.get("/mesej", senaraiMesej);
 r.patch("/mesej/:id/dibaca", tandaDibaca);
 r.delete("/mesej/:id", padamMesej);
+r.patch("/mesej/:id/dipapar", tukarDipapar);
 export default r;

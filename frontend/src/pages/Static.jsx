@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldCheck, Lock, Trash2, Server, Mail, MessageSquare, ChevronDown } from "lucide-react";
 import { useToast } from "../components/Toast.jsx";
 import { api } from "../services/api.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function Shell({ tajuk, sari, children }) {
   return (
@@ -147,10 +148,19 @@ export function FAQ() {
 
 export function Contact() {
   const toast = useToast();
+  const { pengguna } = useAuth();
   const [nama, setNama] = useState("");
   const [emel, setEmel] = useState("");
   const [mesej, setMesej] = useState("");
   const [hantar, setHantar] = useState(false);
+
+  // Auto-isi nama & e-mel jika pengguna sudah log masuk.
+  useEffect(() => {
+    if (pengguna) {
+      setNama((n) => n || pengguna.nama || "");
+      setEmel((e) => e || pengguna.emel || "");
+    }
+  }, [pengguna]);
 
   const submit = async (e) => {
     e.preventDefault();

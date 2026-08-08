@@ -1,6 +1,6 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { hantarMesej } from "../controllers/mesejController.js";
+import { hantarMesej, testimoniAwam } from "../controllers/mesejController.js";
 
 const r = Router();
 
@@ -12,5 +12,6 @@ const hadHantar = rateLimit({
 });
 
 r.post("/", hadHantar, hantarMesej);
+r.get("/testimoni", testimoniAwam);
 
 export default r;

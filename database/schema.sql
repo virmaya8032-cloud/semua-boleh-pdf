@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS mesej_hubungi (
   emel          VARCHAR(255) NOT NULL,
   mesej         TEXT         NOT NULL,
   dibaca        BOOLEAN      NOT NULL DEFAULT FALSE,
+  dipapar       BOOLEAN      NOT NULL DEFAULT FALSE,
   dicipta_pada  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
