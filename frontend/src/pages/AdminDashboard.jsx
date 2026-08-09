@@ -48,8 +48,10 @@ export default function AdminDashboard() {
   const [sistem, setSistem] = useState(null);
   const [mesej, setMesej] = useState([]);
   const [belumDibaca, setBelumDibaca] = useState(0);
+  const [memuatSemula, setMemuatSemula] = useState(false);
 
-  const muatSemua = async () => {
+  const muatSemua = async (tunjukToast = false) => {
+    if (tunjukToast) setMemuatSemula(true);
     try {
       const [s, p, a, sys, m] = await Promise.all([
         api.get("/pentadbir/statistik"),
@@ -64,10 +66,12 @@ export default function AdminDashboard() {
       setSistem(sys);
       setMesej(m.mesej || []);
       setBelumDibaca(m.belum_dibaca || 0);
+      if (tunjukToast) toast.berjaya("Data dikemas kini.");
     } catch (e) {
       toast.ralat(e.message);
     } finally {
       setMemuat(false);
+      setMemuatSemula(false);
     }
   };
 
@@ -188,8 +192,8 @@ export default function AdminDashboard() {
           <h1 className="font-papar text-3xl font-extrabold">Panel Pentadbir</h1>
           <p className="mt-1 text-gray-500">Urus pengguna, pantau aktiviti dan status sistem.</p>
         </div>
-        <button onClick={muatSemua} className="btn-lembut py-2">
-          <RefreshCw size={16} /> Muat Semula
+        <button onClick={() => muatSemua(true)} disabled={memuatSemula} className="btn-lembut py-2">
+          <RefreshCw size={16} className={memuatSemula ? "animate-spin" : ""} /> {memuatSemula ? "Memuat…" : "Muat Semula"}
         </button>
       </div>
 
