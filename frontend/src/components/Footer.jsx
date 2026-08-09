@@ -1,4 +1,4 @@
-/* global __MASA_BINA__ */
+/* global __MASA_BINA__, __BINA__ */
 import { Link } from "react-router-dom";
 
 const lajur = [
@@ -42,6 +42,15 @@ export default function Footer() {
     }
   })();
 
+  // Nombor versi auto: v1.{bilangan commit} — naik sendiri setiap push/deploy.
+  const versi = (() => {
+    try {
+      return `v1.${__BINA__}`;
+    } catch {
+      return "v1.3";
+    }
+  })();
+
   return (
     <footer className="mt-20 border-t border-gray-100 bg-white">
       <div className="mx-auto max-w-6xl px-4 py-12">
@@ -80,7 +89,7 @@ export default function Footer() {
         <div className="mt-10 border-t border-gray-100 pt-6 text-center text-sm text-gray-500">
           © 2026 Semua Boleh PDF oleh VMY. Hak cipta terpelihara.
           <span className="ml-2 text-gray-400">
-            v1.3 · dikemas kini {tarikhBina}
+            {versi} · dikemas kini {tarikhBina}
           </span>
         </div>
       </div>
