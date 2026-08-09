@@ -16,13 +16,19 @@ import { About, Contact, Privacy, Terms, Security, FAQ } from "./pages/Static.js
 
 function TatalKeAtas() {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => window.scrollTo(0, 0), [pathname]);
   return null;
 }
 
 export default function App() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col">
+      {/* Jalur warna jenama di sekeliling laman (atas, bawah, kiri, kanan) */}
+      <div className="fixed inset-x-0 top-0 z-[60] h-2 bg-gradient-to-r from-arang via-merah to-arang" />
+      <div className="fixed inset-x-0 bottom-0 z-[60] h-2 bg-gradient-to-r from-merah via-arang to-merah" />
+      <div className="fixed inset-y-0 left-0 z-[60] w-2 bg-gradient-to-b from-arang via-merah to-arang" />
+      <div className="fixed inset-y-0 right-0 z-[60] w-2 bg-gradient-to-b from-merah via-arang to-merah" />
+
       <TatalKeAtas />
       <Header />
       <main className="flex-1">

@@ -14,9 +14,16 @@ function saizManusia(bait) {
   return `${(bait / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function Stat({ Icon, label, nilai, warna = "#E12128" }) {
+function Stat({ Icon, label, nilai, warna = "#E12128", onClick }) {
+  const bolehKlik = typeof onClick === "function";
   return (
-    <div className="kad flex items-center gap-4 p-5">
+    <div
+      onClick={onClick}
+      role={bolehKlik ? "button" : undefined}
+      tabIndex={bolehKlik ? 0 : undefined}
+      onKeyDown={bolehKlik ? (e) => { if (e.key === "Enter") onClick(); } : undefined}
+      className={`kad flex items-center gap-4 p-5 ${bolehKlik ? "cursor-pointer transition hover:-translate-y-0.5 hover:shadow-naik" : ""}`}
+    >
       <span className="grid h-11 w-11 place-items-center rounded-xl" style={{ backgroundColor: `${warna}14`, color: warna }}>
         <Icon size={20} />
       </span>
@@ -204,16 +211,16 @@ export default function AdminDashboard() {
       {tab === "gambaran" && stat && (
         <div className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Stat Icon={Users} label="Jumlah pengguna" nilai={stat.jumlah_pengguna} />
-            <Stat Icon={FileStack} label="Jumlah fail diproses" nilai={stat.jumlah_fail} warna="#2563eb" />
-            <Stat Icon={CalendarDays} label="Hari ini" nilai={stat.hari_ini} warna="#16a34a" />
-            <Stat Icon={TrendingUp} label="30 hari" nilai={stat.bulan_ini} warna="#7c3aed" />
+            <Stat Icon={Users} label="Jumlah pengguna" nilai={stat.jumlah_pengguna} onClick={() => setTab("pengguna")} />
+            <Stat Icon={FileStack} label="Jumlah fail diproses" nilai={stat.jumlah_fail} warna="#2563eb" onClick={() => setTab("aktiviti")} />
+            <Stat Icon={CalendarDays} label="Hari ini" nilai={stat.hari_ini} warna="#16a34a" onClick={() => setTab("aktiviti")} />
+            <Stat Icon={TrendingUp} label="30 hari" nilai={stat.bulan_ini} warna="#7c3aed" onClick={() => setTab("aktiviti")} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <Stat Icon={CheckCircle2} label="Berjaya" nilai={stat.berjaya} warna="#16a34a" />
-            <Stat Icon={Ban} label="Gagal" nilai={stat.gagal} warna="#E12128" />
-            <Stat Icon={CalendarDays} label="7 hari" nilai={stat.minggu_ini} warna="#d97706" />
+            <Stat Icon={CheckCircle2} label="Berjaya" nilai={stat.berjaya} warna="#16a34a" onClick={() => setTab("aktiviti")} />
+            <Stat Icon={Ban} label="Gagal" nilai={stat.gagal} warna="#E12128" onClick={() => setTab("aktiviti")} />
+            <Stat Icon={CalendarDays} label="7 hari" nilai={stat.minggu_ini} warna="#d97706" onClick={() => setTab("aktiviti")} />
           </div>
 
           <div className="kad p-6">
