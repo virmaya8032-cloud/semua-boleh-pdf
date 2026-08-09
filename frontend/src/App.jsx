@@ -16,7 +16,9 @@ import { About, Contact, Privacy, Terms, Security, FAQ } from "./pages/Static.js
 
 function TatalKeAtas() {
   const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, [pathname]);
   return null;
 }
 
