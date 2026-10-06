@@ -9,6 +9,8 @@ export const pool = new Pool({
   ssl: env.DATABASE_URL.includes("localhost") ? false : { rejectUnauthorized: false },
   max: 10,
   idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 3000,
+  query_timeout: 5000,
 });
 
 pool.on("error", (err) => {

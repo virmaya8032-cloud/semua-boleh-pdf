@@ -96,3 +96,5 @@ Object.assign(ALAT, {
     "max": 0
   }
 });
+
+Object.assign(ALAT["tambah-gambar-pdf"], {min:1,max:2});

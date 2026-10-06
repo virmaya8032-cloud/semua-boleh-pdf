@@ -764,7 +764,7 @@ export const toolsByCategory = (id) => TOOLS.filter((t) => t.kategori === id);
 
 // Pilihan tambahan bagi alat sedia ada.
 const editTool = toolBySlug("edit-pdf");
-Object.assign(editTool, { op: "edit", editor: "edit", options: [], penuh: "Letak teks, gambar, lukisan, kotak dan sorotan pada pratonton PDF. Kandungan asal tidak disunting seperti dokumen Word." });
+Object.assign(editTool, { ringkas: "Klik perkataan untuk edit atau padam terus.", op: "edit", editor: "edit", options: [], penuh: "Papar PDF, klik perkataan atau seluruh baris untuk mengubah dan memadam teks asal. Tambah teks, gambar, lukisan dan sorotan; semak hasil sebelum muat turun." });
 const redactTool = toolBySlug("sensor-pdf");
 Object.assign(redactTool, { editor: "redact", penuh: "Pilih kawasan sulit pada pratonton. Teks, grafik dan piksel gambar dalam kawasan itu dibuang daripada fail hasil." });
 redactTool.options = [];
@@ -799,3 +799,22 @@ for (const tool of TOOLS) {
     if (option.default === undefined && option.jenis === "number" && /^\d+$/.test(option.placeholder || "")) option.default = Number(option.placeholder);
   }
 }
+
+for (const slug of ['tera-air', 'lindungi-pdf', 'buka-kunci-pdf', 'padam-kata-laluan', 'tambah-teks-pdf', 'isi-borang-pdf']) {
+  const required = ({ 'tera-air': 'teks', 'tambah-teks-pdf': 'teks', 'isi-borang-pdf': 'data' })[slug] || 'kata_laluan';
+  const option = toolBySlug(slug)?.options?.find(o => o.key === required);
+  if (option) option.required = true;
+}
+
+toolBySlug("isi-borang-pdf").penuh = "Medan borang PDF dikesan secara automatik. Isi teks, tandakan kotak semak dan pilih jawapan melalui borang yang mudah.";
+
+Object.assign(toolBySlug('potong-pdf'),{editor:'crop',options:[{key:'semua_halaman',label:'Gunakan kawasan crop',jenis:'select',pilihan:[{nilai:'tidak',teks:'Halaman yang saya crop sahaja'},{nilai:'ya',teks:'Semua halaman (pilih satu kawasan)'}]}],penuh:'Papar PDF dan seret kawasan yang mahu dikekalkan. Tarik kotak atau penjuru untuk melaras crop.'});
+Object.assign(toolBySlug('tambah-gambar-pdf'),{editor:'edit',initialKind:'image',accept:'.pdf',multiple:false,minFiles:1,maxFiles:1,options:[],penuh:'Pilih PDF, muat naik gambar, kemudian klik atau seret pada halaman. Alih dan ubah saiz gambar di mana-mana halaman.'});
+Object.assign(toolBySlug('tandatangan-pdf'),{initialKind:'image',penuh:'Muat naik tandatangan PNG/JPG sedia ada atau lukis tandatangan. Letak pada halaman pilihan; seret untuk alih atau ubah saiz.'});
+Object.assign(toolBySlug('isi-borang-pdf'),{editor:'fill',penuh:'Papar borang PDF dan isi medan terus pada halaman. Boleh tambah teks/gambar atau edit/padam teks asal.'});
+toolBySlug('ocr-pdf').options=[
+{key:'bahasa',label:'Bahasa dokumen',jenis:'select',pilihan:[{nilai:'msa+eng',teks:'Melayu + Inggeris'},{nilai:'eng',teks:'Inggeris'},{nilai:'msa',teks:'Melayu'},{nilai:'ind',teks:'Indonesia'},{nilai:'tam+eng',teks:'Tamil + Inggeris'}]},
+{key:'mod',label:'Cara OCR',jenis:'select',pilihan:[{nilai:'skip',teks:'OCR halaman imbasan sahaja (lebih cepat)'},{nilai:'redo',teks:'Ulang OCR teks imbasan lama'},{nilai:'force',teks:'OCR semua halaman (hasil diraster)'}]},
+{key:'halaman',label:'Halaman OCR (kosong = semua)',jenis:'text',placeholder:'1-3,5'}];
+toolBySlug('banding-pdf').penuh='Banding teks dua PDF mengikut halaman. Hasil dipaparkan sebelah-menyebelah: merah untuk teks asal/dibuang dan hijau untuk teks baharu.';
+toolBySlug('pdf-ke-teks').penuh='Ekstrak teks dengan pemisah halaman, baris dan perenggan; pratonton dan salin hasil. PDF imbasan perlu OCR dahulu.';

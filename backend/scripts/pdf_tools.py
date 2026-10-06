@@ -67,8 +67,8 @@ def items_from(options, key='anotasi'):
         items = json.loads(options.get(key, '[]'))
     except (ValueError, TypeError):
         raise ValueError('Senarai anotasi tidak sah.')
-    if not isinstance(items, list) or len(items) > 200:
-        raise ValueError('Maksimum 200 anotasi dibenarkan.')
+    if not isinstance(items, list) or len(items) > 1000:
+        raise ValueError('Maksimum 1000 perubahan dibenarkan bagi setiap simpanan.')
     if any(not isinstance(item, dict) for item in items):
         raise ValueError('Anotasi tidak sah.')
     return items
@@ -81,6 +81,129 @@ def page_size(options):
         raise ValueError('Saiz kertas tidak sah.')
     w, h = sizes[key]
     return (h, w) if options.get('orientasi') == 'landskap' else (w, h)
+
+
+def color_value(value):
+    value = str(value or '#000000')
+    if len(value) != 7 or value[0] != '#':
+        raise ValueError('Warna teks tidak sah.')
+    try:
+        return tuple(int(value[i:i+2], 16)/255 for i in (1,3,5))
+    except ValueError:
+        raise ValueError('Warna teks tidak sah.')
+
+
+def text_layout(page):
+    """Stable source IDs and coordinates derived again from the uploaded original."""
+    words, lines = [], []
+    hidden = [fitz.Rect(span['bbox']) for span in page.get_texttrace() if span['type'] == 3]
+    for bi, block in enumerate(page.get_text('rawdict', flags=fitz.TEXTFLAGS_RAWDICT & ~fitz.TEXT_PRESERVE_IMAGES)['blocks']):
+        for li, line in enumerate(block.get('lines', [])):
+            # Arbitrary angled text is not suitable for horizontal inline replacement.
+            if line.get('wmode', 0) or abs(line.get('dir', (1,0))[0]-1) > 0.001:
+                continue
+            row_id = f'{page.number+1}:{bi}:{li}'
+            members, line_chars = [], []
+            for si, span in enumerate(line['spans']):
+                chunks, chunk = [], []
+                for char in span.get('chars', []):
+                    line_chars.append(char)
+                    if char['c'].isspace():
+                        if chunk: chunks.append(chunk); chunk = []
+                    else:
+                        chunk.append(char)
+                if chunk: chunks.append(chunk)
+                for wi, chars in enumerate(chunks):
+                    rect = fitz.Rect(chars[0]['bbox'])
+                    for char in chars[1:]: rect |= fitz.Rect(char['bbox'])
+                    shown = rect * page.rotation_matrix
+                    origin = fitz.Point(chars[0]['origin']) * page.rotation_matrix
+                    font = span['font']
+                    word = {'id': f'{row_id}:{si}:{wi}', 'row': row_id, 'teks': ''.join(c['c'] for c in chars),
+                        'halaman': page.number+1, 'x': shown.x0/page.rect.width*100, 'y': shown.y0/page.rect.height*100,
+                        'lebar': shown.width/page.rect.width*100, 'tinggi': shown.height/page.rect.height*100,
+                        'saiz': span['size'], 'warna': f"#{span['color']:06x}", 'font': font,
+                        'origin_x': origin.x/page.rect.width*100, 'origin_y': origin.y/page.rect.height*100,
+                        'bold': bool(span['flags'] & 16), 'italic': bool(span['flags'] & 2),
+                        'rotation': page.rotation, 'scan': any(r.contains(fitz.Point(chars[0]['origin'][0]+0.1, chars[0]['origin'][1]-span['size']*0.3)) for r in hidden), '_rect': list(rect), '_origin': list(chars[0]['origin'])}
+                    words.append(word); members.append(word)
+            if members:
+                rect = fitz.Rect(members[0]['_rect'])
+                for word in members[1:]: rect |= fitz.Rect(word['_rect'])
+                shown = rect * page.rotation_matrix
+                lines.append({**members[0], 'id': row_id, 'row': row_id, 'teks': ''.join(c['c'] for c in line_chars).strip(),
+                    'x': shown.x0/page.rect.width*100, 'y': shown.y0/page.rect.height*100,
+                    'lebar': shown.width/page.rect.width*100, 'tinggi': shown.height/page.rect.height*100,
+                    '_rect': list(rect), '_members': [w['id'] for w in members]})
+    return {'words': words, 'lines': lines}
+
+
+def replacement_font(source, item, value):
+    family = item.get('font_family', 'auto')
+    if family not in ('auto', 'sans', 'serif', 'mono'):
+        raise ValueError('Pilihan font tidak sah.')
+    original = source['font'].lower()
+    if family == 'auto':
+        family = 'mono' if 'courier' in original or 'mono' in original else 'serif' if 'times' in original or 'serif' in original else 'sans'
+    bold = item.get('bold', source['bold'])
+    italic = item.get('italic', source['italic'])
+    fonts = {'sans': ('helv','hebo','heit','hebi'), 'serif': ('tiro','tibo','tiit','tibi'), 'mono': ('cour','cobo','coit','cobi')}
+    name = fonts[family][(1 if bold else 0)+(2 if italic else 0)]
+    font = fitz.Font(name)
+    if any(not font.has_glyph(ord(char)) for char in value):
+        name, font = 'china-s', fitz.Font('china-s')
+        if any(not font.has_glyph(ord(char)) for char in value):
+            raise ValueError('Font belum menyokong aksara ini. Gunakan font/fail lain untuk teks tersebut.')
+    return name, font
+
+
+def edit_original_text(doc, items):
+    replacements, chosen = [], set()
+    layouts = {}
+    redactions = {}
+    for item in items:
+        if item.get('jenis') not in ('replace-text', 'delete-text'): continue
+        page = page_for(doc, item)
+        if page.number not in layouts: layouts[page.number] = text_layout(page)
+        layout = layouts[page.number]
+        source = next((s for s in layout['words']+layout['lines'] if s['id'] == item.get('source_id')), None)
+        if not source or source['teks'] != item.get('asal'):
+            raise ValueError('Teks asal berubah. Muat naik semula PDF dan pilih teks sekali lagi.')
+        members = source.get('_members', [source['id']])
+        if any(member in chosen for member in members):
+            raise ValueError('Pilihan perkataan/baris bertindih. Batalkan perubahan terdahulu dahulu.')
+        chosen.update(members)
+        # A narrow band through glyph interiors avoids removing neighbouring lines.
+        for word in layout['words']:
+            if word['id'] not in members: continue
+            rect = fitz.Rect(word['_rect'])
+            cy = word['_origin'][1]-word['saiz']*0.3
+            strip = fitz.Rect(rect.x0+0.05,cy-word['saiz']*0.08,rect.x1-0.05,cy+word['saiz']*0.08)
+            if word['scan']:
+                redactions.setdefault((page.number, True), []).append(rect)
+            else:
+                redactions.setdefault((page.number, False), []).append(strip)
+        value = text(item, 'teks') if item['jenis'] == 'replace-text' else ''
+        if '\n' in value or '\r' in value:
+            raise ValueError('Sunting satu baris pada satu masa. Gunakan Tambah teks untuk perenggan baharu.')
+        if value:
+            size = number(item, 'saiz', source['saiz'], 4, 144)
+            name, font = replacement_font(source, item, value)
+            rect = fitz.Rect(source['_rect'])
+            width = rect.width
+            if not page.rotation and 'lebar' in item:
+                width = number(item, 'lebar', source['lebar'], 0.1, 100)*page.rect.width/100
+                width = min(width, page.rect.width-rect.x0)
+            fitted = min(size, width/max(font.text_length(value, fontsize=1),0.01))
+            if fitted < 4:
+                raise ValueError('Teks terlalu panjang untuk kawasan itu. Pilih seluruh baris atau besarkan lebar teks.')
+            replacements.append((page.number, source['_origin'], value, fitted, name, color_value(item.get('warna', source['warna']))))
+    for (index, scan), rects in redactions.items():
+        page = doc[index]
+        for rect in rects: page.add_redact_annot(rect, fill=(1,1,1) if scan else False, cross_out=False)
+        page.apply_redactions(images=2 if scan else 0, graphics=0, text=0)
+    for index, origin, value, size, name, color in replacements:
+        doc[index].insert_text(origin, value, fontsize=size, fontname=name, color=color, overlay=True)
 
 
 def paragraphs(doc, title, lines):
@@ -151,24 +274,44 @@ def process(op, paths, opts, output):
         return
 
     if op == 'banding':
-        import difflib
+        from text_reports import comparison_report
         first,second = opened(paths[0]),opened(paths[1])
         try:
-            def lines(document):
-                result = []
-                for i,page in enumerate(document):
-                    result.append(f'--- Halaman {i+1} ---\n')
-                    result += [line+'\n' for line in page.get_text(sort=True).splitlines()]
-                return result
-            changes = ''.join(difflib.unified_diff(lines(first),lines(second),fromfile='Fail 1',tofile='Fail 2'))
-            with open(output,'w',encoding='utf-8') as target:
-                target.write('LAPORAN PERBANDINGAN TEKS PDF\n\n'+(changes or 'Tiada perbezaan teks ditemui.\n'))
-        finally:
-            first.close();second.close()
+            with open(output,'w',encoding='utf-8') as target:target.write(comparison_report(first,second))
+        finally:first.close();second.close()
         return
     doc = opened(paths[0]) if paths else fitz.open()
     try:
-        if op in ('pdf-ke-word', 'pdf-ke-excel', 'pdf-ke-powerpoint'):
+        if op == 'teks-kemas':
+            from text_reports import plain_report
+            with open(output, 'w', encoding='utf-8') as target: target.write(plain_report(doc))
+        elif op == 'crop':
+            items = items_from(opts)
+            if not items: raise ValueError('Seret kawasan crop pada PDF dahulu.')
+            if opts.get('semua_halaman') == 'ya':
+                if len(items) != 1: raise ValueError('Pilih satu kawasan untuk crop semua halaman.')
+                items = [{**items[0], 'halaman': i+1} for i in range(len(doc))]
+            seen_pages = set()
+            for item in items:
+                page = page_for(doc,item)
+                if page.number in seen_pages: raise ValueError('Gunakan satu kawasan crop sahaja bagi setiap halaman.')
+                seen_pages.add(page.number)
+                rect = rectangle(page,item)
+                if rect.width < 10 or rect.height < 10: raise ValueError('Kawasan crop terlalu kecil.')
+                # Text coordinates start at the current CropBox top-left.
+                box = rect + (page.cropbox.x0,page.cropbox.y0,page.cropbox.x0,page.cropbox.y0)
+                page.set_cropbox(box)
+            save(doc,output)
+        elif op == 'inspect':
+            index = int(number(opts, 'halaman', 1, 1, len(doc)))-1
+            layout = text_layout(doc[index])
+            for group in layout.values():
+                for entry in group:
+                    for key in list(entry):
+                        if key.startswith('_'): del entry[key]
+            with open(output, 'w', encoding='utf-8') as target:
+                json.dump({'halaman': index+1, 'jumlah': len(doc), **layout}, target, ensure_ascii=False)
+        elif op in ('pdf-ke-word', 'pdf-ke-excel', 'pdf-ke-powerpoint'):
             if op == 'pdf-ke-word':
                 from docx import Document
                 result = Document()
@@ -234,19 +377,37 @@ def process(op, paths, opts, output):
                 # Remove text, overlapping vectors, and pixels inside image redactions.
                 page.apply_redactions(images=2, graphics=2, text=0)
             save(doc, output, fresh=True)
-        elif op == 'edit':
+        elif op in ('edit','fill-edit'):
             items = items_from(opts)
-            if not items:
+            if not items and op != 'fill-edit':
                 raise ValueError('Tambah sekurang-kurangnya satu teks, gambar atau anotasi.')
+            if op == 'fill-edit':
+                try: values = json.loads(opts.get('field_values','{}'))
+                except (TypeError,ValueError): raise ValueError('Nilai borang tidak sah.')
+                if not isinstance(values,dict) or len(values)>1000: raise ValueError('Nilai borang tidak sah.')
+                for page in doc:
+                    for widget in page.widgets() or []:
+                        if widget.field_name not in values or widget.field_flags & 1: continue
+                        value = str(values[widget.field_name])
+                        if len(value)>30000: raise ValueError('Teks medan terlalu panjang.')
+                        if widget.field_type == fitz.PDF_WIDGET_TYPE_CHECKBOX:
+                            widget.field_value = widget.on_state() if value.lower() in ('ya','true','1','on') else 'Off'
+                        elif widget.field_type in (fitz.PDF_WIDGET_TYPE_TEXT,fitz.PDF_WIDGET_TYPE_COMBOBOX,fitz.PDF_WIDGET_TYPE_LISTBOX):widget.field_value=value
+                        else:continue
+                        widget.update()
+
+            edit_original_text(doc, items)
             for item in items:
                 page = page_for(doc, item)
                 kind = item.get('jenis')
+                if kind in ('replace-text', 'delete-text'): continue
                 rect = rectangle(page, item)
                 if kind == 'text':
                     value = text(item,'teks',required=True)
                     size = number(item,'saiz',14,6,72)
                     # Built-in CJK font handles Unicode on the PDF page.
-                    remaining = page.insert_textbox(rect, value, fontsize=size, rotate=page.rotation, fontname='china-s', color=(0,0,0), overlay=True)
+                    fontname, _font = replacement_font({'font': 'Helvetica', 'bold': False, 'italic': False}, item, value)
+                    remaining = page.insert_textbox(rect, value, fontsize=size, rotate=page.rotation, fontname=fontname, color=color_value(item.get('warna')), overlay=True)
                     if remaining < 0:
                         raise ValueError('Kotak teks terlalu kecil. Besarkan kotak atau kecilkan saiz teks.')
                 elif kind == 'highlight':
@@ -266,13 +427,15 @@ def process(op, paths, opts, output):
                     shape.finish(color=(0,0,0), width=2)
                     shape.commit(overlay=True)
                 elif kind == 'image':
-                    data = text(item,'data',required=True)
-                    if not data.startswith(('data:image/png;base64,','data:image/jpeg;base64,')) or len(data)>4000000:
+                    data = str(item.get('data', ''))
+                    if not data.startswith(('data:image/png;base64,','data:image/jpeg;base64,')) or len(data)>4200000:
                         raise ValueError('Gambar anotasi mesti PNG/JPG, maksimum 3 MB.')
-                    page.insert_image(rect, stream=base64.b64decode(data.split(',',1)[1], validate=True), keep_proportion=True, overlay=True)
+                    image_bytes = base64.b64decode(data.split(',',1)[1], validate=True)
+                    if len(image_bytes) > 3*1024*1024: raise ValueError('Gambar anotasi maksimum 3 MB.')
+                    page.insert_image(rect, stream=image_bytes, rotate=page.rotation, keep_proportion=True, overlay=True)
                 else:
                     raise ValueError('Jenis anotasi tidak disokong.')
-            doc.bake()
+            doc.bake(annots=True,widgets=op!='fill-edit' or opts.get('flatten')!='tidak')
             save(doc,output)
         elif op == 'ekstrak-gambar':
             count = 0
@@ -342,7 +505,7 @@ def process(op, paths, opts, output):
                 doc.set_metadata(metadata)
             save(doc,output)
         elif op == 'flatten':
-            doc.bake()
+            doc.bake(annots=True,widgets=op!='fill-edit' or opts.get('flatten')!='tidak')
             save(doc,output)
         elif op == 'cipta-borang':
             if not len(doc):

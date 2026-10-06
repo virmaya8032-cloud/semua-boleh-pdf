@@ -8,6 +8,9 @@ export function tidakDijumpai(_req, res) {
 export function pengendaliRalat(err, _req, res, _next) {
   // Ralat khusus multer (saiz/bilangan fail)
   if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FIELD_VALUE') {
+      return res.status(413).json({ ralat: 'Maklumat edit terlalu besar. Kurangkan gambar atau bilangan perubahan dan cuba lagi.' });
+    }
     if (err.code === "LIMIT_FILE_SIZE") {
       return res.status(413).json({ ralat: `Saiz fail melebihi had ${env.MAX_FILE_MB} MB.` });
     }

@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr-msa \
     tesseract-ocr-eng \
     tesseract-ocr-ind \
+    tesseract-ocr-tam \
     fonts-liberation \
     fonts-dejavu \
     python3 \

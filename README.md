@@ -104,7 +104,7 @@ Projek ini disediakan untuk kegunaan anda. Semua reka bentuk dan kod adalah ters
 
 ## Versi dikemas kini — 6 Oktober 2026
 
-Lihat `KEMAS_KINI.md` untuk 10 alat baharu, editor visual, sensor sebenar dan cara menggantikan kod lama.
+Lihat `KEMAS_KINI.md` untuk 10 alat baharu, editor klik-perkataan untuk menggantikan/padam teks asal, kad pratonton halaman, invois/borang mudah, sensor sebenar dan cara menggantikan kod lama.
 Alat memproses dokumen sebenar; ini bukan kod sumber atau salinan reka bentuk PDF24.
 
 ### Tambahan keperluan tempatan
@@ -121,3 +121,11 @@ Pada Windows, laluan Python venv ialah `.venv\Scripts\python.exe`.
 Dockerfile memasang dan menetapkan Python secara automatik; deployment perlu membina semula backend.
 
 Ujian backend: `cd backend` kemudian `npm test`. Ujian menggunakan Python dan Poppler.
+
+### Pengesahan kod
+
+```bash
+npm test --prefix backend
+npm test --prefix frontend
+npm run build --prefix frontend
+```

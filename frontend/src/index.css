@@ -39,3 +39,27 @@ h1, h2, h3, h4 { @apply font-papar; }
     @apply rounded-2xl border border-gray-100 bg-white shadow-kad;
   }
 }
+
+.pdf-editor { border: 1px solid #dbe0e6; border-radius: 16px; overflow: hidden; background: white; }
+.editor-toolbar { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; padding:12px; border-bottom:1px solid #e5e7eb; background:#fafbfc; }
+.editor-tool { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:8px 10px; font-size:13px; border:1px solid transparent; border-radius:8px; }
+.editor-tool:hover { background:#edf0f4; }
+.editor-tool.active { background:#fee2e2; color:#b91c1c; border-color:#fecaca; }
+.editor-tool:disabled { opacity:.35; cursor:not-allowed; }
+.editor-controls { display:flex; flex-wrap:wrap; align-items:end; gap:12px; padding:12px; border-bottom:1px solid #e5e7eb; }
+.editor-controls label, .editor-inspector label { display:block; font-size:13px; }
+.editor-controls .medan, .editor-inspector .medan { padding:8px 10px; margin-top:4px; border-radius:8px; }
+.editor-body { display:flex; align-items:stretch; }
+.editor-scroll { flex:1; min-width:0; overflow:auto; padding:22px; background:#e9edf2; max-height:850px; }
+.editor-page { position:relative; min-width:280px; margin:auto; background:white; box-shadow:0 2px 12px #0002; container-type:inline-size; }
+.pdf-word { position:absolute; background:transparent; padding:0; border:1px solid transparent; border-radius:2px; cursor:text; min-height:5px; }
+.pdf-word:hover,.pdf-word.selected { border-color:#2563eb; background:#3b82f622; }
+.pdf-word.search-match { background:#facc1544; border-color:#eab308; }
+.pdf-inline-input { position:absolute; padding:0; margin:0; min-width:25px; border:1px solid #2563eb; outline:0; border-radius:1px; line-height:1.1; background:#fffef9; }
+.editor-inspector { display:flex; flex-direction:column; gap:12px; width:235px; flex-shrink:0; padding:16px; border-left:1px solid #e5e7eb; }
+@media(max-width:700px) { .editor-body { flex-direction:column; } .editor-inspector { width:100%; border-left:0; border-top:1px solid #e5e7eb; } .editor-scroll { padding:12px; max-height:650px; } .editor-tool { font-size:12px; padding:7px; } }
+.pdf-object { position:absolute; border:1px dashed #2563eb; cursor:move; touch-action:none; }
+.pdf-resize { position:absolute; right:-6px; bottom:-6px; width:14px; height:14px; border:2px solid white; border-radius:3px; background:#2563eb; cursor:nwse-resize; touch-action:none; }
+.pdf-form-field { position:absolute; background:#eff6ffd9; border:1px solid #3b82f6; border-radius:2px; padding:2px; min-height:12px; outline-offset:0; }
+@keyframes processing { from { transform:translateX(-100%); } to { transform:translateX(400%); } }
+.process-indicator { animation:processing 1.8s linear infinite; }

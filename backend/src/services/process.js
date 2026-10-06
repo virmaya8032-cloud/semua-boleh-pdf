@@ -34,6 +34,7 @@ const MIME = {
   pdf: "application/pdf",
   zip: "application/zip",
   txt: "text/plain; charset=utf-8",
+  html: "text/html; charset=utf-8",
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -67,6 +68,7 @@ export async function proses(op, paths, opts = {}) {
     case "tera-air":
       return hasil(simpanBytes(await PL.teraAir(p0, opts.teks)), "pdf", "dokumen-tera-air");
     case "potong":
+      if (opts.anotasi) return hasil(await pythonPdf('crop',paths,opts),'pdf','dokumen-dipotong');
       return hasil(simpanBytes(await PL.potong(p0, opts.margin)), "pdf", "dokumen-dipotong");
     case "imej-ke-pdf":
       return hasil(simpanBytes(await PL.imejKePdf(paths, opts)), "pdf", "imej-ke-pdf");
@@ -77,13 +79,15 @@ export async function proses(op, paths, opts = {}) {
     case "tambah-teks":
       return hasil(simpanBytes(await PL.tambahTeks(p0, opts.teks, opts.halaman, opts.x, opts.y, opts.saiz)), "pdf", "dokumen-diedit");
     case "tambah-gambar":
+      if (opts.anotasi) return hasil(await pythonPdf('edit',paths,opts),'pdf','dokumen-bergambar');
       return hasil(simpanBytes(await PL.tambahGambar(paths, opts)), "pdf", "dokumen-bergambar");
     case "isi-borang":
-      return hasil(simpanBytes(await PL.isiBorang(p0, opts.data, opts.flatten)), "pdf", "borang-diisi");
+      if (opts.anotasi !== undefined) return hasil(await pythonPdf('fill-edit',paths,opts),'pdf','borang-diisi');
+      return hasil(simpanBytes(await PL.isiBorang(p0, opts.data, opts.flatten, opts.field_values)), "pdf", "borang-diisi");
     case "pdf-ke-teks":
-      return hasil(simpanBytes(await PT.ekstrakTeks(p0), "txt"), "txt", "teks-diekstrak");
+      return hasil(await pythonPdf('teks-kemas',paths,opts,'txt'),'txt','teks-diekstrak');
     case "banding":
-      return hasil(await pythonPdf("banding", paths, opts, "txt"), "txt", "laporan-perbandingan");
+      return hasil(await pythonPdf("banding", paths, opts, "html"), "html", "laporan-perbandingan");
 
     // --- Binari sistem ---
     case "mampat":
@@ -109,7 +113,7 @@ export async function proses(op, paths, opts = {}) {
     case "pdf-a":
       return hasil(await BIN.pdfA(p0), "pdf", "dokumen-pdfa");
     case "ocr":
-      return hasil(await BIN.ocr(p0, opts.bahasa), "pdf", "dokumen-ocr");
+      return hasil(await BIN.ocr(p0, opts.bahasa, opts), "pdf", "dokumen-ocr");
     case "pdf-ke-imej": {
       const { dir, fail } = await BIN.pdfKeImej(p0, opts._format || "png", opts.dpi || "150");
       const ext = (opts._format || "png") === "jpg" ? "jpg" : "png";

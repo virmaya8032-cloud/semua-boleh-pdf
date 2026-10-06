@@ -8,8 +8,9 @@ import { OUTPUT_DIR, namaRawak } from "../utils/files.js";
 // Jalankan arahan tanpa shell (elak suntikan). Pulangkan {code, stdout, stderr}.
 function jalan(cmd, args, opsyen = {}) {
   return new Promise((resolve, reject) => {
-    const anak = spawn(cmd, args, { ...opsyen, shell: false });
-    const timeout = setTimeout(() => { anak.kill("SIGKILL"); reject(new Error("Pemprosesan terlalu lama. Cuba fail yang lebih kecil.")); }, 120000);
+    const { timeoutMs = 120000, ...spawnOptions } = opsyen;
+    const anak = spawn(cmd, args, { ...spawnOptions, shell: false });
+    const timeout = setTimeout(() => { anak.kill("SIGKILL"); reject(new Error("Pemprosesan terlalu lama. Cuba fail yang lebih kecil atau beberapa halaman sahaja.")); }, timeoutMs);
     let out = "", err = "";
     anak.stdout?.on("data", (d) => (out += d));
     anak.stderr?.on("data", (d) => (err += d));
@@ -80,7 +81,7 @@ async function libreConvert(input, targetFilter, extKeluar, infilter) {
   if (infilter) args.push(`--infilter=${infilter}`);
   args.push("--convert-to", targetFilter, "--outdir", kerja, input);
   try {
-  await jalan("libreoffice", args);
+  await jalan("libreoffice", args, {timeoutMs:300000});
 
   const dihasilkan = fs.readdirSync(kerja).find((f) => f.toLowerCase().endsWith("." + extKeluar));
   if (!dihasilkan) throw new Error("Penukaran gagal — tiada fail hasil dijana.");
@@ -112,10 +113,29 @@ export async function pdfKeImej(input, format = "png", dpi = "150") {
 }
 
 // ---------- OCRmyPDF: jadikan PDF boleh dicari ----------
-export async function ocr(input, bahasa = "eng") {
+export async function ocr(input, bahasa = "eng", opts = {}) {
+  if (!['eng','msa','ind','msa+eng','tam','tam+eng'].includes(bahasa)) throw new Error('Bahasa OCR tidak sah.');
+  const langs = await jalan('tesseract', ['--list-langs']);
+  const available = new Set((langs.out+'\n'+langs.err).split(/\r?\n/).map(s=>s.trim()));
+  if (bahasa.split('+').some(lang=>!available.has(lang))) throw new Error(`Data bahasa OCR ${bahasa} belum dipasang pada backend. Deploy semula Docker atau pilih bahasa Inggeris jika sesuai.`);
   const out = outPath("pdf");
-  await jalan("ocrmypdf", ["-l", bahasa, "--skip-text", "--optimize", "1", input, out]);
-  return out;
+  const mode = ({skip:'--skip-text',redo:'--redo-ocr',force:'--force-ocr'})[opts.mod || 'skip'];
+  if (!mode) throw new Error('Mod OCR tidak sah.');
+  const args=['-l',bahasa,mode,'--output-type','pdf','--optimize','0','--jobs','1','--tesseract-timeout','90'];
+  if (opts.halaman) {
+    if (!/^\d+(?:-\d+)?(?:,\d+(?:-\d+)?)*$/.test(String(opts.halaman).replace(/\s/g,''))) throw new Error('Julat halaman OCR tidak sah.');
+    args.push('--pages',String(opts.halaman).replace(/\s/g,''));
+  }
+  args.push(input,out);
+  try {
+    await jalan('ocrmypdf',args,{timeoutMs:540000});
+    return out;
+  } catch (error) {
+    fs.rmSync(out,{force:true});
+    if (/encrypted|password/i.test(error.message)) throw new Error('PDF berkunci. Buka kunci PDF sebelum OCR.');
+    if (/timeout|timed out/i.test(error.message)) throw new Error('OCR mengambil masa terlalu lama. Cuba julat halaman lebih kecil atau imej yang lebih jelas.');
+    throw error;
+  }
 }
 
 export { jalan };

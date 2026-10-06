@@ -32,7 +32,7 @@ function saringSambungan(_req, file, cb) {
 export const muatNaik = multer({
   storage: storan,
   fileFilter: saringSambungan,
-  limits: { fileSize: env.MAX_FILE_MB * 1024 * 1024, files: 30 },
+  limits: { fileSize: env.MAX_FILE_MB * 1024 * 1024, files: 30, fieldSize: 8 * 1024 * 1024 },
 });
 
 // Tanda tangan bait sebenar yang dibenarkan (magic numbers).

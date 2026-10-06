@@ -4,9 +4,32 @@ import { ALAT } from "../config/tools.js";
 import { proses } from "../services/process.js";
 import { padamFail } from "../utils/files.js";
 import { daftarOutput, ambilOutput, buangOutput } from "../utils/outputs.js";
+import {env} from "../config/env.js";
 import { query } from "../config/db.js";
+import { pythonPdf } from "../services/pythonPdf.js";
+import { periksaBorang } from "../services/pdfLib.js";
+
+export async function periksaPdf(req, res) {
+  const files = req.files || [];
+  let output;
+  try {
+    if (files.length !== 1 || path.extname(files[0].originalname).toLowerCase() !== '.pdf') throw new Error('Pilih satu fail PDF.');
+    if (req.body.mode === 'forms') {
+      res.setHeader('Cache-Control', 'no-store');
+      return res.json(await periksaBorang(files[0].path));
+    }
+    output = await pythonPdf('inspect', [files[0].path], { halaman: req.body.halaman || 1, mode: req.body.mode }, 'json');
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(JSON.parse(fs.readFileSync(output, 'utf8')));
+  } catch (error) {
+    res.status(400).json({ ralat: error.message });
+  } finally {
+    padamFail([...files.map(f => f.path), ...(output ? [output] : [])]);
+  }
+}
 
 async function logPenggunaan({ penggunaId, slug, meta, saiz, status, mesej }) {
+  if (!env.DATABASE_URL) return;
   try {
     await query(
       `INSERT INTO penggunaan (pengguna_id, alat, nama_alat, saiz_bait, status, mesej)
@@ -48,8 +71,11 @@ export async function prosesFail(req, res) {
     if (types.some((ext) => !allowed.includes(ext))) {
       bersih(); return res.status(400).json({ ralat: "Jenis fail tidak sesuai untuk alat ini." });
     }
-    if (meta.op === "tambah-gambar" && (types.filter((ext) => ext === ".pdf").length !== 1 || types.filter((ext) => imageTypes.includes(ext)).length !== 1)) {
+    if (meta.op === "tambah-gambar" && !req.body.anotasi && (types.filter((ext) => ext === ".pdf").length !== 1 || types.filter((ext) => imageTypes.includes(ext)).length !== 1)) {
       bersih(); return res.status(400).json({ ralat: "Pilih satu fail PDF dan satu gambar JPG/PNG." });
+    }
+    if (meta.op === "tambah-gambar" && req.body.anotasi && (types.length!==1||types[0]!=='.pdf')) {
+      bersih(); return res.status(400).json({ralat:'Pilih satu PDF dan muat naik gambar melalui editor.'});
     }
     // Kumpul pilihan daripada borang; suntik format untuk PDF->imej.
     const opts = { ...req.body };
@@ -59,7 +85,7 @@ export async function prosesFail(req, res) {
     bersih(); // padam input serta-merta selepas diproses
 
     const nama = daftarOutput(hasil);
-    await logPenggunaan({ penggunaId, slug, meta, saiz: jumlahSaiz, status: "berjaya" });
+    void logPenggunaan({ penggunaId, slug, meta, saiz: jumlahSaiz, status: "berjaya" });
 
     res.json({
       mesej: "Fail berjaya diproses.",
@@ -68,7 +94,7 @@ export async function prosesFail(req, res) {
     });
   } catch (e) {
     bersih();
-    await logPenggunaan({ penggunaId, slug, meta: meta || { nama: slug }, saiz: jumlahSaiz, status: "gagal", mesej: e.message });
+    void logPenggunaan({ penggunaId, slug, meta: meta || { nama: slug }, saiz: jumlahSaiz, status: "gagal", mesej: e.message });
     res.status(400).json({ ralat: e.message || "Pemprosesan gagal." });
   }
 }

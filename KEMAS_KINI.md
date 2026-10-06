@@ -1,6 +1,26 @@
-# Semua Boleh PDF — versi 47 alat
+# Semua Boleh PDF — 47 alat, editor visual dan pemprosesan baharu
 
 Dikemas kini pada 6 Oktober 2026. Kod ini menambah fungsi setara pada projek sedia ada menggunakan komponen PDF sumber terbuka. Ia bukan kod sumber PDF24. Jenama, reka bentuk, akaun pengguna dan panel pentadbir dikekalkan.
+
+## Tujuh pembaikan dalam kemas kini ini
+
+| Permintaan | Perubahan dan cara guna |
+| --- | --- |
+| Potong PDF | PDF dipaparkan. Seret kawasan yang hendak dikekalkan, kemudian alih kotak atau tarik penjuru untuk melaras. Boleh pilih kawasan berlainan setiap halaman atau gunakan satu kawasan pada semua halaman. |
+| Tandatangan | Muat naik PNG/JPG tandatangan sedia ada atau lukis. Letakkan pada halaman pilihan, kemudian pilih **Alih / ubah saiz** untuk seret dan besarkan/kecilkan. PNG dengan latar telus sesuai untuk tandatangan. |
+| Tambah Gambar | Pilih PDF, muat naik gambar dalam editor dan letakkan terus pada halaman. Boleh tambah beberapa gambar, alih, ubah saiz, padam atau tukar halaman. Had setiap gambar 3 MB. |
+| OCR | Semak bahasa OCR yang dipasang dan pulangkan ralat jelas jika tiada. Pilih bahasa, mod langkau teks/ulang OCR/paksa OCR dan julat halaman jika perlu. Output PDF biasa mengelakkan kerja penukaran PDF/A dan pengoptimuman gambar yang tidak diperlukan. |
+| PDF kepada Teks / Bandingkan PDF | Teks mengekalkan baris, blok, lajur dan pemisah halaman, dengan pratonton serta Salin teks. Perbandingan menjadi laporan HTML sebelah menyebelah: teks dibuang merah, ditambah hijau, dan bahagian sama boleh dikembangkan. |
+| Proses lama | Muat naik diikuti kerja latar dengan status serta masa berlalu. Bar kemajuan hanya menunjukkan kemajuan upload. Kerja berat dan ringan mempunyai slot berasingan; hasil tidak lagi menunggu log pangkalan data. |
+| Isi Borang | Medan teks, kotak semak dan senarai pilihan muncul terus di atas halaman borang. Boleh isi medan, tambah teks/gambar, sunting atau padam teks asal, kemudian simpan sekali. PDF tanpa medan boleh menggunakan Tambah teks. |
+
+Crop mengubah kawasan halaman yang dipaparkan; kandungan di luar kawasan masih boleh berada dalam fail. Gunakan **Sensor PDF** untuk membuang kandungan sulit.
+
+Perbandingan ialah perubahan **teks**, bukan perbandingan piksel gambar. Muat turun laporan `.html` dan buka dalam pelayar. Susunan teks pada jadual atau reka letak yang sangat rumit masih perlu disemak.
+
+OCR pada PDF imbasan sebenar dengan bahasa Inggeris lulus ujian. Imej Docker menyediakan bahasa Melayu, Indonesia dan Tamil; enjin bahasa ini perlu tersedia dalam deployment baharu. Kualiti hasil bergantung pada imbasan dan bahasa. Mesej kegagalan deployment lama belum tersedia untuk mengesahkan punca tunggalnya.
+
+Kerja latar disimpan dalam memori pelayan. Jika pelayan dimulakan semula, jalankan semula kerja. OCR atau penukaran Office yang besar masih boleh mengambil masa; gunakan julat halaman lebih kecil apabila sesuai.
 
 ## Apa yang ditambah
 
@@ -19,31 +39,45 @@ Dikemas kini pada 6 Oktober 2026. Kod ini menambah fungsi setara pada projek sed
 
 ## Alat sedia ada yang diperbaiki
 
-- **Edit PDF:** pratonton halaman; letak teks, gambar, sorotan, kotak dan lukisan. Seret untuk menentukan saiz kawasan. Boleh buang anotasi sebelum memproses.
+- **Edit PDF terus:** PDF dipaparkan dengan perkataan boleh diklik. Klik perkataan atau seluruh baris dan terus taip untuk menggantikan teks asal. Boleh padam teks asal, pilih saiz/font/warna/tebal/condong, tambah teks/gambar/lukisan/sorotan, cari perkataan pada halaman, zoom, Undo/Redo dan lompat halaman. Teks asal yang dipilih benar-benar dibuang daripada kandungan PDF hasil. Maksimum 1000 perubahan bagi satu simpanan.
 - **Sensor PDF:** pilih kawasan pada pratonton. Pemprosesan membuang teks, grafik dan piksel imej dalam kawasan itu daripada PDF hasil, serta menulis dokumen baharu tanpa objek lama. Kandungan di luar kawasan kekal. Sensor ini tidak memadam salinan maklumat yang berada pada halaman lain atau salinan fail asal.
 - **Tandatangan:** lukis tandatangan atau letak gambar melalui editor. Ini tandatangan visual, tanpa sijil digital.
 - **PDF kepada Word:** menghasilkan teks yang boleh diedit; bukan susun atur Word yang sama tepat dengan PDF asal.
 - **PDF kepada Excel:** jadual yang dikenal pasti diekstrak; jika tiada jadual, teks halaman dimasukkan ke helaian.
 - **PDF kepada PowerPoint:** halaman menjadi slaid bergambar; teks tidak boleh diedit pada slaid. Nisbah halaman dikekalkan.
-- **Banding PDF:** laporan perubahan baris teks, termasuk perubahan urutan. Bukan perbandingan visual gambar.
+- **Banding PDF:** laporan HTML perubahan teks mengikut halaman, dipaparkan sebelah menyebelah. Bukan perbandingan visual gambar.
 - **Gambar kepada PDF:** pilihan saiz asal/A4/Letter, orientasi dan margin.
 - **Putar PDF:** pilihan semua halaman atau julat tertentu.
-- **Tambah Gambar:** pilihan halaman, kedudukan dan lebar.
+- **Tambah Gambar:** muat naik dan letak pada pratonton PDF; seret, ubah saiz dan pilih halaman.
 - **PDF kepada JPG/PNG:** 72/150/300 DPI dan urutan halaman yang betul.
-- **Isi Borang:** teks, kotak semak dan pilihan; boleh kekalkan medan boleh diedit atau flatten.
+- **Isi Borang:** medan dikesan secara automatik dan diisi terus pada pratonton PDF. Boleh tambah/padam teks, kekalkan medan boleh diedit atau flatten.
+- **Alat halaman:** padam, ekstrak, putar dan susun kini mempunyai kad pratonton. Klik halaman untuk memilih; gunakan anak panah atau seret untuk susun. Dokumen panjang dipaparkan 20 kad pada satu masa.
+- **Pisah PDF:** pilihan terus untuk menjadikan setiap halaman satu PDF, atau masukkan kumpulan julat sendiri.
+- **Invois:** tambah/buang baris item, kuantiti dan harga menggunakan medan biasa; jumlah RM dikira semasa mengisi.
+- **Hasil:** pratonton PDF hasil sebelum muat turun, paparan saiz fail serta peratus perubahan bagi mampatan, dan butang Sambung edit/Ubah tetapan. Fail hasil dicache dalam pelayar selepas diterima supaya boleh dimuat turun tanpa memproses semula.
+- **Upload:** format fail diterima dipaparkan, fail salah jenis ditolak, dan butang anak panah disediakan untuk menyusun fail.
 - Arahan sistem tidak lagi menggunakan shell; kata laluan dihantar sebagai argumen literal. Penukaran LibreOffice menggunakan profil sementara berasingan.
 - Laluan publish Netlify dibetulkan kepada `dist` apabila base ialah `frontend`.
 - Skema pangkalan data turut dibekalkan dalam backend supaya migrasi tersedia dalam imej Docker.
 
-## Cara guna editor
+## Cara guna editor baharu
 
-1. Pilih alat Edit PDF, Tandatangan PDF, Sensor PDF atau Cipta Borang PDF.
-2. Muat naik PDF; alat Cipta Borang boleh dimulakan tanpa fail.
-3. Pilih halaman dan alat. Untuk teks, isi teks dan saiz sebelum meletakkannya.
-4. Klik untuk kotak lalai atau seret untuk saiz sendiri. Untuk lukisan, seret pen pada halaman.
-5. Klik Proses Fail dan muat turun hasil.
+1. Buka **Edit PDF** dan pilih PDF. Dokumen terus dipaparkan.
+2. Dalam mod **Edit perkataan**, klik perkataan pada halaman dan terus taip teks baharu. Pilih **Seluruh baris** untuk menggantikan satu baris.
+3. Panel di sebelah kanan (di bawah pada telefon) membolehkan anda ubah saiz huruf, warna, font, tebal/condong dan lebar kawasan. **Padam perkataan / baris** membuang teks asal.
+4. Untuk kandungan baharu, pilih **Tambah teks**, **Gambar**, **Lukis**, **Sorotan** atau **Kotak** dan klik/seret pada halaman.
+5. Gunakan **Undo/Redo**, senarai perubahan atau **Buang** jika mahu membatalkan perubahan. Sebelum menukar pilihan daripada perkataan kepada seluruh baris yang sama, buang perubahan perkataan itu untuk mengelakkan pertindihan.
+6. Klik **Simpan PDF**. Semak pratonton hasil dan klik **Muat Turun PDF**. **Sambung edit** mengekalkan senarai perubahan pada dokumen asal.
 
-Pratonton kedudukan/teks ialah anggaran. Semak PDF hasil. Editor menambah kandungan; ia tidak menyunting teks asal seperti Microsoft Word. PDF berkunci perlu dibuka menggunakan kata laluan dahulu. PDF imbasan memerlukan OCR sebelum pengekstrakan teks/jadual.
+### Had yang perlu diketahui
+
+- Perkataan boleh disunting apabila PDF mengandungi teks yang dapat dikenal pasti. PDF imbasan/gambar perlu melalui **OCR** dahulu.
+- Bagi teks OCR tersembunyi di atas gambar imbasan, gambar dalam kawasan perkataan dipadam dan diganti dengan latar putih. Semak dokumen yang mempunyai kertas berwarna/gambar di belakang teks.
+- Font asal dipadankan kepada font standard yang hampir sama. Sesetengah aksara/font khas tidak disokong dan akan memulangkan ralat; bentuk huruf asal mungkin berubah.
+- Suntingan ialah perkataan/baris pada kedudukan asal. Teks panjang dikecilkan untuk muat; boleh besarkan lebar kawasan atau pilih seluruh baris. Perenggan tidak mengalir semula seperti Word. Teks yang dilukis sebagai bentuk atau bersudut bebas tidak boleh dipilih dalam mod perkataan.
+- Pratonton edit ialah anggaran. Pratonton **PDF hasil** selepas simpan menunjukkan dokumen sebenar, termasuk perubahan pada latar/putaran/font.
+- PDF berkunci perlu dibuka kunci dahulu. Isi Borang menyokong medan AcroForm teks, kotak semak dan senarai pilihan; gunakan Tambah teks bagi PDF tanpa medan. Borang XFA tidak disokong.
+- Muat turun hasil sebelum menutup atau memuat semula tab. Sejarah Undo/Redo hanya untuk sesi editor semasa; senarai perubahan dikekalkan apabila Sambung edit.
 
 ## Upload ke GitHub — langkah mudah
 
@@ -52,7 +86,7 @@ Pratonton kedudukan/teks ialah anggaran. Semak PDF hasil. Editor menambah kandun
 3. Salin **kandungan di dalam folder itu**: `backend`, `frontend`, `database` dan fail konfigurasi.
 4. GitHub Desktop → pilih repo `semua-boleh-pdf` → Show in Explorer.
 5. Paste kandungan tadi ke folder repo dan pilih Replace apabila diminta. Jangan salin keseluruhan folder luar sehingga menjadi folder bersarang.
-6. GitHub Desktop → Summary: `Tambah alat PDF dan editor visual` → Commit to main → Push origin.
+6. GitHub Desktop → Summary: `Baiki crop, tandatangan, borang, OCR dan laporan PDF` → Commit to main → Push origin.
 7. Deploy semula **backend Render** dan **frontend Netlify**. Jika kedua-duanya disambung ke GitHub dengan auto deploy, push akan memulakan deployment.
 
 ZIP hanya mengandungi kod sumber. Jangan upload folder `node_modules` atau fail `.env` sebenar.
@@ -60,7 +94,7 @@ ZIP hanya mengandungi kod sumber. Jangan upload folder `node_modules` atau fail 
 ## Keperluan deployment
 
 - Frontend: base `frontend`; build `npm run build`; publish `dist`; `VITE_API_URL` ialah URL backend.
-- Backend: root `backend`; Docker; Python dipasang melalui `requirements.txt`. Dockerfile menetapkan `PYTHON_BIN`.
+- Backend: root `backend`; Docker; Python dipasang melalui `requirements.txt`. Dockerfile menetapkan `PYTHON_BIN`. Deploy semula Docker untuk memasang enjin OCR, termasuk Tamil. Frontend baharu memerlukan laluan API kerja latar daripada backend baharu.
 - Kekalkan `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS` dan butiran pentadbir sedia ada.
 - Jika deploy baharu, ikut `DEPLOYMENT.md`. Jangan reset pangkalan data untuk kemas kini ini.
 - Uji satu fail contoh selepas deploy. Alat berat memerlukan RAM yang mencukupi.
@@ -68,11 +102,15 @@ ZIP hanya mengandungi kod sumber. Jangan upload folder `node_modules` atau fail 
 ## Pengesahan dalam persekitaran pembangunan
 
 - Katalog frontend dan backend sepadan: 47 alat.
-- 40 ujian backend lulus, meliputi 37 alat serta input tidak sah dan penghantaran argumen sistem.
-- Empat aliran API lulus: cipta invois, editor, sensor, cipta borang; termasuk muat turun hasil.
+- 77 ujian backend lulus: operasi 37 alat, suntingan teks asal, perkataan bersebelahan/latar/gambar, baris berbilang font, putaran 90°/180°/270°, halaman crop, piksel teks OCR, borang automatik dan input tidak sah. Ujian baharu turut meliputi crop empat putaran, gambar tegak pada empat putaran, isi borang bersama suntingan teks, urutan dua lajur, laporan HTML dan OCR pada PDF imej sebenar.
+- 14 ujian interaksi frontend dalam DOM lulus: klik/taip/padam, Undo/Redo, pilihan halaman, susunan, item invois, borang automatik, fail salah jenis dan sambung edit; termasuk seret crop, letak/alih tandatangan, isi pada PDF dan pratonton teks.
+- 3 ujian klien API lulus: menunggu kerja selesai, mesej kegagalan dan berhenti meminta status apabila meninggalkan halaman.
+- Empat aliran API terdahulu lulus: cipta invois, editor, sensor, cipta borang; termasuk muat turun hasil.
+- API baharu turut lulus: kenal pasti perkataan → ganti teks → muat turun; kenal pasti medan → isi borang → muat turun; input tiada fail dan anotasi terlalu besar ditolak.
+- API kerja latar lulus untuk crop, gambar visual melebihi 1 MB, isi borang dengan teks, TXT, laporan HTML dan kegagalan kerja. Respons pemprosesan terus tidak tersekat walaupun sambungan pangkalan data ujian sengaja tidak menjawab.
 - Frontend berjaya dibina untuk produksi.
-- Ujian GUI dalam pelayar belum dijalankan kerana pelayar ujian tidak tersedia dalam persekitaran ini.
-- Penukaran Office→PDF, PDF/A dan fungsi qpdf perlu diuji selepas deploy Docker; binari LibreOffice/qpdf tidak tersedia dalam persekitaran ujian ini. OCR diuji dengan fail berteks; kualiti OCR pada dokumen imbasan sebenar bergantung pada imej/bahasa.
+- Ujian DOM tidak menggantikan semakan pelayar sebenar. Ujian Chromium/paparan fizikal belum dijalankan kerana pelayar tidak tersedia; semak pada komputer/telefon selepas deploy.
+- Penukaran Office→PDF, PDF/A dan fungsi qpdf perlu diuji selepas deploy Docker; binari LibreOffice/qpdf tidak tersedia dalam persekitaran ujian ini. OCR bahasa Inggeris diuji pada PDF imbasan imej tanpa teks asal; bahasa Melayu/Tamil belum diuji dalam persekitaran tempatan ini.
 - Akaun/log masuk, pangkalan data sebenar dan deployment ke hos anda tidak diuji dalam sesi ini.
 
 ## Kebergantungan

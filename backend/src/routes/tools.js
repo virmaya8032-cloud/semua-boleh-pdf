@@ -2,8 +2,10 @@ import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { muatNaik, sahkanKandungan } from "../middleware/upload.js";
 import { authPilihan } from "../middleware/auth.js";
-import { prosesFail, muatTurun } from "../controllers/toolController.js";
+import { prosesFail, muatTurun, periksaPdf } from "../controllers/toolController.js";
 import { ALAT } from "../config/tools.js";
+
+import {startJob,jobStatus} from "../services/jobs.js";
 
 const r = Router();
 
@@ -31,6 +33,11 @@ r.post(
   prosesFail
 );
 
+// Page-by-page text inspection keeps response sizes bounded for large PDFs.
+r.post('/periksa', hadProses, muatNaik.array('files', 1), sahkanKandungan, periksaPdf);
+
+r.post('/kerja/:slug', hadProses, authPilihan, muatNaik.array('files',30), sahkanKandungan, startJob);
+r.get('/kerja/:id', jobStatus);
 r.get("/muat-turun/:nama", muatTurun);
 
 export default r;

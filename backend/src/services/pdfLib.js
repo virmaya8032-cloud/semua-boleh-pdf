@@ -222,22 +222,30 @@ export async function tambahGambar(inputs, opts = {}) {
   return doc.save();
 }
 
-export async function isiBorang(input, dataText, flatten = "ya") {
+export async function isiBorang(input, dataText, flatten = "ya", jsonValues) {
   const doc = await muat(input);
   const borang = doc.getForm();
-  const pasangan = (dataText || "").split(/[;\n]/).map((s) => s.trim()).filter(Boolean);
-  if (pasangan.length === 0) throw new Error("Sila masukkan data borang (medan=nilai).");
+  let pasangan;
+  if (jsonValues) {
+    let parsed;
+    try { parsed = JSON.parse(jsonValues); } catch { throw new Error('Nilai borang tidak sah.'); }
+    if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object' || Object.keys(parsed).length > 1000) throw new Error('Nilai borang tidak sah.');
+    pasangan = Object.entries(parsed).map(([key, value]) => [key, String(value)]);
+  } else {
+    pasangan = (dataText || "").split(/[;\n]/).map((s) => s.trim()).filter(Boolean).map(p => { const [key,...rest]=p.split('='); return [key.trim(),rest.join('=').trim()]; });
+  }
+  if (pasangan.length === 0) throw new Error("Sila isi sekurang-kurangnya satu medan borang.");
   let diisi = 0;
-  for (const p of pasangan) {
-    const [medan, ...rest] = p.split("=");
-    const nilai = rest.join("=").trim();
+  for (const [medan, nilai] of pasangan) {
     if (!medan) continue;
     try {
       const f = borang.getField(medan.trim());
       if (typeof f.setText === "function") f.setText(nilai);
       else if (typeof f.check === "function") {
         if (["true", "ya", "1", "on"].includes(nilai.toLowerCase())) f.check(); else f.uncheck();
-      } else if (typeof f.select === "function") f.select(nilai);
+      } else if (typeof f.select === "function") {
+        if (!nilai && typeof f.clear === 'function') f.clear(); else f.select(nilai);
+      }
       else continue;
       diisi++;
     } catch { /* medan tidak wujud — langkau */ }
@@ -245,4 +253,19 @@ export async function isiBorang(input, dataText, flatten = "ya") {
   if (diisi === 0) throw new Error("Tiada medan borang sepadan ditemui dalam PDF.");
   if (flatten !== "tidak") borang.flatten();
   return doc.save();
+}
+
+export async function periksaBorang(input) {
+  const doc = await muat(input);
+  const fields = doc.getForm().getFields();
+  if (fields.length > 1000) throw new Error('Borang mempunyai terlalu banyak medan.');
+  return { fields: fields.map(field => {
+    const kind = field.constructor.name;
+    const type = ({ PDFTextField:7, PDFCheckBox:2, PDFDropdown:3, PDFOptionList:4 })[kind] || 0;
+    const pageRef = field.acroField.getWidgets()[0]?.P();
+    const page = pageRef ? doc.getPages().findIndex(page => page.ref.toString() === pageRef.toString()) : -1;
+    return { nama: field.getName(), type, halaman: page+1 || 1, readonly: field.isReadOnly(),
+      choices: typeof field.getOptions === 'function' ? field.getOptions() : [],
+      value: type===2 ? (field.isChecked() ? 'ya' : 'Off') : type===7 ? field.getText() || '' : typeof field.getSelected === 'function' ? field.getSelected()[0] || '' : '' };
+  }) };
 }
