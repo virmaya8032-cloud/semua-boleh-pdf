@@ -23,10 +23,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tesseract-ocr-ind \
     fonts-liberation \
     fonts-dejavu \
+    python3 \
+    python3-venv \
     ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+COPY requirements.txt ./
+RUN python3 -m venv /opt/pdf-python && /opt/pdf-python/bin/pip install --no-cache-dir -r requirements.txt
+ENV PYTHON_BIN=/opt/pdf-python/bin/python
 
 # Pasang kebergantungan Node dahulu (cache lapisan).
 COPY package*.json ./

@@ -26,3 +26,8 @@ npm-debug.log*
 Thumbs.db
 .idea/
 .vscode/
+
+# Python
+.venv/
+**/__pycache__/
+*.pyc

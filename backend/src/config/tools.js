@@ -32,7 +32,7 @@ export const ALAT = {
   "lindungi-pdf":      { op: "lindungi", nama: "Lindungi PDF" },
   "buka-kunci-pdf":    { op: "buka-kunci", nama: "Buka Kunci PDF" },
   "padam-kata-laluan": { op: "buka-kunci", nama: "Padam Kata Laluan PDF" },
-  "tandatangan-pdf":   { op: "tandatangan", nama: "Tandatangan PDF" },
+  "tandatangan-pdf":   { op: "edit", nama: "Tandatangan PDF" },
   "sensor-pdf":        { op: "sensor", nama: "Sensor PDF" },
 
   "imbas-ke-pdf":      { op: "imej-ke-pdf", nama: "Imbas kepada PDF", multiple: true, min: 1 },
@@ -40,7 +40,59 @@ export const ALAT = {
   "banding-pdf":       { op: "banding", nama: "Bandingkan PDF", multiple: true, min: 2, max: 2 },
   "tambah-teks-pdf":   { op: "tambah-teks", nama: "Tambah Teks ke PDF" },
   "tambah-gambar-pdf": { op: "tambah-gambar", nama: "Tambah Gambar ke PDF", multiple: true, min: 2, max: 2 },
-  "edit-pdf":          { op: "tambah-teks", nama: "Edit PDF" },
+  "edit-pdf":          { op: "edit", nama: "Edit PDF" },
   "isi-borang-pdf":    { op: "isi-borang", nama: "Isi Borang PDF" },
   "pdf-a":             { op: "pdf-a", nama: "Tukar kepada PDF/A" },
 };
+
+Object.assign(ALAT, {
+  "ekstrak-gambar-pdf": {
+    "op": "ekstrak-gambar",
+    "nama": "Ekstrak Gambar PDF"
+  },
+  "overlay-pdf": {
+    "op": "overlay",
+    "nama": "Tindih PDF",
+    "min": 2,
+    "max": 2,
+    "multiple": true
+  },
+  "halaman-per-helaian": {
+    "op": "nup",
+    "nama": "Halaman per Helaian"
+  },
+  "saiz-halaman-pdf": {
+    "op": "saiz-halaman",
+    "nama": "Tukar Saiz Halaman"
+  },
+  "edit-metadata-pdf": {
+    "op": "edit-metadata",
+    "nama": "Edit Metadata PDF"
+  },
+  "buang-metadata-pdf": {
+    "op": "buang-metadata",
+    "nama": "Buang Metadata PDF"
+  },
+  "flatten-pdf": {
+    "op": "flatten",
+    "nama": "Flatten PDF"
+  },
+  "cipta-borang-pdf": {
+    "op": "cipta-borang",
+    "nama": "Cipta Borang PDF",
+    "min": 0,
+    "max": 1
+  },
+  "cipta-invois": {
+    "op": "invois",
+    "nama": "Cipta Invois",
+    "min": 0,
+    "max": 0
+  },
+  "permohonan-kerja-pdf": {
+    "op": "permohonan-kerja",
+    "nama": "Permohonan Kerja PDF",
+    "min": 0,
+    "max": 0
+  }
+});

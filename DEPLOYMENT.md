@@ -87,7 +87,7 @@ Anda sepatutnya melihat "Skema selesai." dan mesej benih pentadbir.
 3. Tetapan binaan:
    - **Base directory:** `frontend`
    - **Build command:** `npm run build`
-   - **Publish directory:** `frontend/dist`
+   - **Publish directory:** `dist` (relatif kepada base `frontend`)
    *(Fail `netlify.toml` yang disertakan sudah menetapkan ini secara automatik.)*
 4. Tambah **Environment variable**:
    - `VITE_API_URL` = URL backend Render anda (dari Langkah 2), cth `https://semua-boleh-pdf-api.onrender.com`

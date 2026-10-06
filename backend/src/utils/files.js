@@ -34,7 +34,7 @@ export function huraiJulat(teks, maxHalaman) {
       let a = parseInt(m[1], 10);
       let b = parseInt(m[2], 10);
       if (a > b) [a, b] = [b, a];
-      for (let i = a; i <= b; i++) if (i >= 1 && i <= maxHalaman) set.add(i);
+      for (let i = Math.max(1, a); i <= Math.min(maxHalaman, b); i++) set.add(i);
     } else if (/^\d+$/.test(t)) {
       const n = parseInt(t, 10);
       if (n >= 1 && n <= maxHalaman) set.add(n);

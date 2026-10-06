@@ -15,7 +15,9 @@ async function main() {
     process.exit(1);
   }
 
-  const schemaPath = path.resolve(__dirname, "../../../database/schema.sql");
+  const candidates = [path.resolve(__dirname, "../../../database/schema.sql"), path.resolve(__dirname, "../../database/schema.sql")];
+  const schemaPath = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!schemaPath) throw new Error("Fail skema pangkalan data tidak ditemui.");
   const schema = fs.readFileSync(schemaPath, "utf8");
   console.log("Menjalankan skema pangkalan data...");
   await query(schema);

@@ -4,6 +4,7 @@ import archiver from "archiver";
 import * as PL from "./pdfLib.js";
 import * as PT from "./pdfText.js";
 import * as BIN from "./binary.js";
+import { pythonPdf } from "./pythonPdf.js";
 import { OUTPUT_DIR, namaRawak, laluanOutput } from "../utils/files.js";
 
 function simpanBytes(bytes, ext = "pdf") {
@@ -60,7 +61,7 @@ export async function proses(op, paths, opts = {}) {
     case "susun-halaman":
       return hasil(simpanBytes(await PL.susunHalaman(p0, opts.susunan)), "pdf", "dokumen-disusun");
     case "putar":
-      return hasil(simpanBytes(await PL.putar(p0, opts.sudut)), "pdf", "dokumen-diputar");
+      return hasil(simpanBytes(await PL.putar(p0, opts.sudut, opts.halaman)), "pdf", "dokumen-diputar");
     case "nombor-halaman":
       return hasil(simpanBytes(await PL.nomborHalaman(p0, opts.kedudukan)), "pdf", "dokumen-bernombor");
     case "tera-air":
@@ -68,21 +69,21 @@ export async function proses(op, paths, opts = {}) {
     case "potong":
       return hasil(simpanBytes(await PL.potong(p0, opts.margin)), "pdf", "dokumen-dipotong");
     case "imej-ke-pdf":
-      return hasil(simpanBytes(await PL.imejKePdf(paths)), "pdf", "imej-ke-pdf");
+      return hasil(simpanBytes(await PL.imejKePdf(paths, opts)), "pdf", "imej-ke-pdf");
     case "tandatangan":
       return hasil(simpanBytes(await PL.tandatangan(p0, opts.nama)), "pdf", "dokumen-ditandatangani");
     case "sensor":
-      return hasil(simpanBytes(await PL.sensor(p0, opts.halaman, opts.y, opts.tinggi)), "pdf", "dokumen-disensor");
+      return hasil(await pythonPdf("sensor", paths, opts), "pdf", "dokumen-disensor");
     case "tambah-teks":
       return hasil(simpanBytes(await PL.tambahTeks(p0, opts.teks, opts.halaman, opts.x, opts.y, opts.saiz)), "pdf", "dokumen-diedit");
     case "tambah-gambar":
-      return hasil(simpanBytes(await PL.tambahGambar(paths)), "pdf", "dokumen-bergambar");
+      return hasil(simpanBytes(await PL.tambahGambar(paths, opts)), "pdf", "dokumen-bergambar");
     case "isi-borang":
-      return hasil(simpanBytes(await PL.isiBorang(p0, opts.data)), "pdf", "borang-diisi");
+      return hasil(simpanBytes(await PL.isiBorang(p0, opts.data, opts.flatten)), "pdf", "borang-diisi");
     case "pdf-ke-teks":
       return hasil(simpanBytes(await PT.ekstrakTeks(p0), "txt"), "txt", "teks-diekstrak");
     case "banding":
-      return hasil(simpanBytes(await PT.banding(paths), "txt"), "txt", "laporan-perbandingan");
+      return hasil(await pythonPdf("banding", paths, opts, "txt"), "txt", "laporan-perbandingan");
 
     // --- Binari sistem ---
     case "mampat":
@@ -100,17 +101,17 @@ export async function proses(op, paths, opts = {}) {
     case "html-ke-pdf":
       return hasil(await BIN.htmlKePdf(p0), "pdf", "dokumen");
     case "pdf-ke-office":
-      return hasil(await BIN.pdfKeWord(p0), "docx", "dokumen");
+      return hasil(await pythonPdf("pdf-ke-word", paths, opts, "docx"), "docx", "dokumen");
     case "pdf-ke-excel":
-      return hasil(await BIN.pdfKeExcel(p0), "xlsx", "dokumen");
+      return hasil(await pythonPdf("pdf-ke-excel", paths, opts, "xlsx"), "xlsx", "dokumen");
     case "pdf-ke-pptx":
-      return hasil(await BIN.pdfKePptx(p0), "pptx", "dokumen");
+      return hasil(await pythonPdf("pdf-ke-powerpoint", paths, opts, "pptx"), "pptx", "dokumen");
     case "pdf-a":
       return hasil(await BIN.pdfA(p0), "pdf", "dokumen-pdfa");
     case "ocr":
       return hasil(await BIN.ocr(p0, opts.bahasa), "pdf", "dokumen-ocr");
     case "pdf-ke-imej": {
-      const { dir, fail } = await BIN.pdfKeImej(p0, opts._format || "png");
+      const { dir, fail } = await BIN.pdfKeImej(p0, opts._format || "png", opts.dpi || "150");
       const ext = (opts._format || "png") === "jpg" ? "jpg" : "png";
       const entri = fail.map((f, i) => ({ laluan: f, nama: `halaman-${i + 1}.${ext}` }));
       const zip = await buatZip(entri);
@@ -118,6 +119,12 @@ export async function proses(op, paths, opts = {}) {
       return hasil(zip, "zip", "halaman-imej");
     }
 
+    case "ekstrak-gambar":
+      return hasil(await pythonPdf(op, paths, opts, "zip"), "zip", "gambar-pdf");
+    case "overlay": case "nup": case "saiz-halaman": case "edit-metadata":
+    case "buang-metadata": case "flatten": case "cipta-borang":
+    case "invois": case "permohonan-kerja": case "edit":
+      return hasil(await pythonPdf(op, paths, opts), "pdf", `hasil-${op}`);
     default:
       throw new Error(`Operasi tidak dikenali: ${op}`);
   }

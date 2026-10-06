@@ -6,6 +6,7 @@ import { ProgressBar } from "../components/ui.jsx";
 import { api } from "../services/api.js";
 import { useToast } from "../components/Toast.jsx";
 import { Download, RefreshCw, ArrowLeft, CheckCircle2, Settings2, Clock } from "lucide-react";
+import PdfEditor from "../components/PdfEditor.jsx";
 import { ikonAlat } from "../config/icons.js";
 
 export default function ToolPage() {
@@ -35,6 +36,10 @@ export default function ToolPage() {
     };
   }, [tool]);
 
+  useEffect(() => {
+    setFail([]); setPilihan({}); setHasil(null); setRalat(""); setPeringkat("pilih"); setKemajuan(0);
+  }, [slug]);
+
   if (!tool) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
@@ -47,7 +52,7 @@ export default function ToolPage() {
 
   const bolehSusun = tool.multiple;
   const maxFiles = tool.maxFiles || (tool.multiple ? 30 : 1);
-  const minFiles = tool.minFiles || (tool.op === "gabung" ? 2 : 1);
+  const minFiles = tool.minFiles ?? (tool.op === "gabung" ? 2 : 1);
 
   const tambahFail = (baru) => {
     setRalat("");
@@ -68,7 +73,7 @@ export default function ToolPage() {
   const ubahPilihan = (key, nilai) => setPilihan((p) => ({ ...p, [key]: nilai }));
 
   const proses = async () => {
-    if (!fail.length) {
+    if (!fail.length && minFiles > 0) {
       setRalat("Sila pilih sekurang-kurangnya satu fail.");
       return;
     }
@@ -80,9 +85,16 @@ export default function ToolPage() {
     // Isi nilai lalai untuk menu pilihan (supaya sepadan dengan yang dipaparkan).
     const lalai = {};
     for (const o of tool.options || []) {
-      if (o.jenis === "select" && o.pilihan?.length) lalai[o.key] = o.pilihan[0].nilai;
+      if (o.default !== undefined) lalai[o.key] = o.default;
+      else if (o.jenis === "select" && o.pilihan?.length) lalai[o.key] = o.pilihan[0].nilai;
     }
     const hantaran = { ...lalai, ...(tool.extra || {}), ...pilihan };
+    for (const o of tool.options || []) {
+      if (o.required && !String(hantaran[o.key] ?? "").trim()) { setRalat(`Sila isi ${o.label}.`); return; }
+    }
+    if (tool.editor && JSON.parse(hantaran[tool.editor === "form" ? "medan" : "anotasi"] || "[]").length === 0) {
+      setRalat("Tambah sekurang-kurangnya satu kawasan, medan atau anotasi pada pratonton."); return;
+    }
     setPeringkat("proses");
     setKemajuan(0);
     setRalat("");
@@ -159,13 +171,15 @@ export default function ToolPage() {
           <>
         {peringkat === "pilih" && (
           <>
-            <Dropzone accept={tool.accept} multiple={tool.multiple} onFiles={tambahFail} />
+            {!tool.noFile && <Dropzone accept={tool.accept} multiple={tool.multiple} onFiles={(files) => { tambahFail(files); if (tool.editor) setPilihan({}); }} />}
+            {tool.editor === "form" && <p className="mt-2 text-sm text-gray-500">Muat naik PDF sebagai templat, atau terus tambah medan pada halaman A4 kosong di bawah.</p>}
+            {tool.editor && (fail.length > 0 || tool.editor === "form") && <PdfEditor key={`${slug}-${fail[0]?.name || "blank"}`} file={fail[0]} mode={tool.editor} value={pilihan[tool.editor === "form" ? "medan" : "anotasi"]} onChange={(value) => ubahPilihan(tool.editor === "form" ? "medan" : "anotasi", value)} />}
 
             {fail.length > 0 && (
               <FileList fail={fail} onRemove={buangFail} onReorder={susunFail} bolehSusun={bolehSusun} />
             )}
 
-            {tool.options?.length > 0 && fail.length > 0 && (
+            {tool.options?.length > 0 && (fail.length > 0 || minFiles === 0) && (
               <div className="mt-6 rounded-xl bg-kabus p-4">
                 <p className="mb-3 flex items-center gap-2 text-sm font-bold text-arang">
                   <Settings2 size={16} /> Tetapan
@@ -184,12 +198,14 @@ export default function ToolPage() {
                             <option key={p.nilai} value={p.nilai}>{p.teks}</option>
                           ))}
                         </select>
+                      ) : o.jenis === "textarea" ? (
+                        <textarea className="medan" rows={5} placeholder={o.placeholder || ""} value={pilihan[o.key] ?? o.default ?? ""} onChange={(e) => ubahPilihan(o.key, e.target.value)} />
                       ) : (
                         <input
                           className="medan"
                           type={o.jenis === "number" ? "number" : o.jenis === "password" ? "password" : "text"}
                           placeholder={o.placeholder || ""}
-                          value={pilihan[o.key] ?? ""}
+                          value={pilihan[o.key] ?? o.default ?? ""}
                           min={o.min}
                           max={o.max}
                           onChange={(e) => ubahPilihan(o.key, e.target.value)}
@@ -203,8 +219,8 @@ export default function ToolPage() {
 
             {ralat && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-merah">{ralat}</p>}
 
-            <button onClick={proses} disabled={!fail.length} className="btn-utama mt-6 w-full text-base">
-              Proses Fail
+            <button onClick={proses} disabled={fail.length < minFiles} className="btn-utama mt-6 w-full text-base">
+              {tool.noFile ? "Cipta PDF" : "Proses Fail"}
             </button>
           </>
         )}

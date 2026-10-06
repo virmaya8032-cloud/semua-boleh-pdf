@@ -10,7 +10,7 @@ const MASA_BINA = new Date().toISOString();
 // 2) Jika gagal (Vercel shallow clone), guna nombor berdasarkan tarikh supaya tetap naik.
 function kiraBina() {
   try {
-    const n = parseInt(execSync("git rev-list --count HEAD", { encoding: "utf8" }).trim(), 10);
+    const n = parseInt(execSync("git rev-list --count HEAD", { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim(), 10);
     if (n && n > 0) return n;
   } catch {
     /* abaikan */
@@ -35,5 +35,5 @@ export default defineConfig({
       "/api": { target: "http://localhost:4000", changeOrigin: true },
     },
   },
-  build: { outDir: "dist", sourcemap: false },
+  build: { target: "es2022", outDir: "dist", sourcemap: false },
 });

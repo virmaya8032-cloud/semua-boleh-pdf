@@ -4,7 +4,7 @@
 [build]
   base = "frontend"
   command = "npm install && npm run build"
-  publish = "frontend/dist"
+  publish = "dist"
 
 # Sokongan penghalaan SPA (React Router) — semua laluan diarahkan ke index.html.
 [[redirects]]

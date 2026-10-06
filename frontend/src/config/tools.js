@@ -340,5 +340,462 @@ export const TOOLS = [
   },
 ];
 
+TOOLS.push(...[
+  {
+    "slug": "ekstrak-gambar-pdf",
+    "nama": "Ekstrak Gambar PDF",
+    "op": "ekstrak-gambar",
+    "ringkas": "Ambil gambar terbenam sebagai PNG dalam ZIP.",
+    "penuh": "Ambil gambar terbenam sebagai PNG dalam ZIP.",
+    "kategori": "tambahan",
+    "icon": "FileText",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [],
+    "outExt": "zip"
+  },
+  {
+    "slug": "overlay-pdf",
+    "nama": "Tindih PDF",
+    "op": "overlay",
+    "ringkas": "Letak kandungan PDF kedua di atas PDF pertama. Kawasan putih dalam PDF kedua boleh menutup kandungan di bawah.",
+    "penuh": "Letak kandungan PDF kedua di atas PDF pertama. Kawasan putih dalam PDF kedua boleh menutup kandungan di bawah.",
+    "kategori": "tambahan",
+    "icon": "Combine",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": true,
+    "options": [
+      {
+        "key": "mod",
+        "label": "Padanan halaman",
+        "jenis": "select",
+        "pilihan": [
+          {
+            "nilai": "ulang",
+            "teks": "Ulang halaman PDF kedua"
+          },
+          {
+            "nilai": "sepadan",
+            "teks": "Bilangan halaman mesti sama"
+          }
+        ]
+      }
+    ],
+    "minFiles": 2,
+    "maxFiles": 2
+  },
+  {
+    "slug": "halaman-per-helaian",
+    "nama": "Halaman per Helaian",
+    "op": "nup",
+    "ringkas": "Susun 2, 4, 6, 9 atau 16 halaman pada satu helaian.",
+    "penuh": "Susun 2, 4, 6, 9 atau 16 halaman pada satu helaian.",
+    "kategori": "tambahan",
+    "icon": "FileSpreadsheet",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [
+      {
+        "key": "bilangan",
+        "label": "Halaman setiap helaian",
+        "jenis": "select",
+        "pilihan": [
+          {
+            "nilai": "2",
+            "teks": "2"
+          },
+          {
+            "nilai": "4",
+            "teks": "4"
+          },
+          {
+            "nilai": "6",
+            "teks": "6"
+          },
+          {
+            "nilai": "9",
+            "teks": "9"
+          },
+          {
+            "nilai": "16",
+            "teks": "16"
+          }
+        ]
+      },
+      {
+        "key": "saiz_kertas",
+        "label": "Saiz kertas",
+        "jenis": "select",
+        "pilihan": [
+          {
+            "nilai": "a4",
+            "teks": "A4"
+          },
+          {
+            "nilai": "a3",
+            "teks": "A3"
+          },
+          {
+            "nilai": "a5",
+            "teks": "A5"
+          },
+          {
+            "nilai": "letter",
+            "teks": "Letter"
+          },
+          {
+            "nilai": "legal",
+            "teks": "Legal"
+          }
+        ]
+      },
+      {
+        "key": "orientasi",
+        "label": "Orientasi",
+        "jenis": "select",
+        "pilihan": [
+          {
+            "nilai": "potret",
+            "teks": "Potret"
+          },
+          {
+            "nilai": "landskap",
+            "teks": "Landskap"
+          }
+        ]
+      },
+      {
+        "key": "margin_pt",
+        "label": "Margin helaian (pt)",
+        "jenis": "number",
+        "default": 12,
+        "min": 0,
+        "max": 100
+      }
+    ]
+  },
+  {
+    "slug": "saiz-halaman-pdf",
+    "nama": "Tukar Saiz Halaman",
+    "op": "saiz-halaman",
+    "ringkas": "Muatkan kandungan PDF pada saiz kertas baharu tanpa memotongnya.",
+    "penuh": "Muatkan kandungan PDF pada saiz kertas baharu tanpa memotongnya.",
+    "kategori": "tambahan",
+    "icon": "Crop",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [
+      {
+        "key": "saiz_kertas",
+        "label": "Saiz kertas",
+        "jenis": "select",
+        "pilihan": [
+          {
+            "nilai": "a4",
+            "teks": "A4"
+          },
+          {
+            "nilai": "a3",
+            "teks": "A3"
+          },
+          {
+            "nilai": "a5",
+            "teks": "A5"
+          },
+          {
+            "nilai": "letter",
+            "teks": "Letter"
+          },
+          {
+            "nilai": "legal",
+            "teks": "Legal"
+          }
+        ]
+      },
+      {
+        "key": "orientasi",
+        "label": "Orientasi",
+        "jenis": "select",
+        "pilihan": [
+          {
+            "nilai": "potret",
+            "teks": "Potret"
+          },
+          {
+            "nilai": "landskap",
+            "teks": "Landskap"
+          }
+        ]
+      },
+      {
+        "key": "margin_pt",
+        "label": "Margin (pt)",
+        "jenis": "number",
+        "default": 12,
+        "min": 0,
+        "max": 100
+      }
+    ]
+  },
+  {
+    "slug": "edit-metadata-pdf",
+    "nama": "Edit Metadata PDF",
+    "op": "edit-metadata",
+    "ringkas": "Tetapkan tajuk, pengarang, subjek dan kata kunci PDF.",
+    "penuh": "Tetapkan tajuk, pengarang, subjek dan kata kunci PDF.",
+    "kategori": "tambahan",
+    "icon": "FileText",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [
+      {
+        "key": "title",
+        "label": "Tajuk",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "author",
+        "label": "Pengarang",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "subject",
+        "label": "Subjek",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "keywords",
+        "label": "Kata kunci",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      }
+    ]
+  },
+  {
+    "slug": "buang-metadata-pdf",
+    "nama": "Buang Metadata PDF",
+    "op": "buang-metadata",
+    "ringkas": "Buang metadata dokumen dan metadata XMP. Kandungan yang kelihatan pada halaman kekal.",
+    "penuh": "Buang metadata dokumen dan metadata XMP. Kandungan yang kelihatan pada halaman kekal.",
+    "kategori": "tambahan",
+    "icon": "FileText",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": []
+  },
+  {
+    "slug": "flatten-pdf",
+    "nama": "Flatten PDF",
+    "op": "flatten",
+    "ringkas": "Jadikan borang dan anotasi sebagai kandungan halaman tetap.",
+    "penuh": "Jadikan borang dan anotasi sebagai kandungan halaman tetap.",
+    "kategori": "tambahan",
+    "icon": "FormInput",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": []
+  },
+  {
+    "slug": "cipta-borang-pdf",
+    "nama": "Cipta Borang PDF",
+    "op": "cipta-borang",
+    "ringkas": "Tambah medan teks atau kotak semak pada PDF. Boleh mula dengan halaman A4 kosong.",
+    "penuh": "Tambah medan teks atau kotak semak pada PDF. Boleh mula dengan halaman A4 kosong.",
+    "kategori": "tambahan",
+    "icon": "FormInput",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [],
+    "minFiles": 0,
+    "maxFiles": 1,
+    "editor": "form"
+  },
+  {
+    "slug": "cipta-invois",
+    "nama": "Cipta Invois",
+    "op": "invois",
+    "ringkas": "Cipta invois PDF dengan jumlah item dikira secara automatik.",
+    "penuh": "Cipta invois PDF dengan jumlah item dikira secara automatik.",
+    "kategori": "tambahan",
+    "icon": "FileSpreadsheet",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [
+      {
+        "key": "penjual",
+        "label": "Nama / alamat penjual",
+        "jenis": "text",
+        "default": "",
+        "required": true
+      },
+      {
+        "key": "pelanggan",
+        "label": "Nama / alamat pelanggan",
+        "jenis": "text",
+        "default": "",
+        "required": true
+      },
+      {
+        "key": "nombor",
+        "label": "Nombor invois",
+        "jenis": "text",
+        "default": "INV-001",
+        "required": false
+      },
+      {
+        "key": "tarikh",
+        "label": "Tarikh",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "item",
+        "label": "Item: Perkara | Kuantiti | Harga seunit (satu item setiap baris)",
+        "jenis": "textarea",
+        "default": "Perkhidmatan | 1 | 100.00",
+        "required": true
+      },
+      {
+        "key": "nota",
+        "label": "Nota / maklumat bayaran",
+        "jenis": "textarea",
+        "default": "",
+        "required": false
+      }
+    ],
+    "minFiles": 0,
+    "maxFiles": 0,
+    "noFile": true
+  },
+  {
+    "slug": "permohonan-kerja-pdf",
+    "nama": "Permohonan Kerja PDF",
+    "op": "permohonan-kerja",
+    "ringkas": "Cipta surat permohonan kerja dalam PDF daripada butiran anda.",
+    "penuh": "Cipta surat permohonan kerja dalam PDF daripada butiran anda.",
+    "kategori": "tambahan",
+    "icon": "FileText",
+    "warna": "#0891b2",
+    "accept": ".pdf",
+    "multiple": false,
+    "options": [
+      {
+        "key": "nama",
+        "label": "Nama penuh",
+        "jenis": "text",
+        "default": "",
+        "required": true
+      },
+      {
+        "key": "jawatan",
+        "label": "Jawatan dipohon",
+        "jenis": "text",
+        "default": "",
+        "required": true
+      },
+      {
+        "key": "syarikat",
+        "label": "Syarikat / penerima",
+        "jenis": "text",
+        "default": "",
+        "required": true
+      },
+      {
+        "key": "alamat",
+        "label": "Alamat",
+        "jenis": "textarea",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "emel",
+        "label": "E-mel",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "telefon",
+        "label": "Telefon",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "tarikh",
+        "label": "Tarikh",
+        "jenis": "text",
+        "default": "",
+        "required": false
+      },
+      {
+        "key": "surat",
+        "label": "Isi surat",
+        "jenis": "textarea",
+        "default": "Tuan/Puan,\n\nSaya ingin memohon jawatan yang ditawarkan. Saya mempunyai pengalaman dan kemahiran yang berkaitan.\n\nSaya berharap diberi peluang untuk menghadiri temu duga. Terima kasih.",
+        "required": true
+      }
+    ],
+    "minFiles": 0,
+    "maxFiles": 0,
+    "noFile": true
+  }
+]);
+
 export const toolBySlug = (slug) => TOOLS.find((t) => t.slug === slug);
 export const toolsByCategory = (id) => TOOLS.filter((t) => t.kategori === id);
+
+// Pilihan tambahan bagi alat sedia ada.
+const editTool = toolBySlug("edit-pdf");
+Object.assign(editTool, { op: "edit", editor: "edit", options: [], penuh: "Letak teks, gambar, lukisan, kotak dan sorotan pada pratonton PDF. Kandungan asal tidak disunting seperti dokumen Word." });
+const redactTool = toolBySlug("sensor-pdf");
+Object.assign(redactTool, { editor: "redact", penuh: "Pilih kawasan sulit pada pratonton. Teks, grafik dan piksel gambar dalam kawasan itu dibuang daripada fail hasil." });
+redactTool.options = [];
+const formTool = toolBySlug("isi-borang-pdf");
+formTool.options.push({ key: "flatten", jenis: "select", label: "Selepas diisi", pilihan: [{ nilai: "ya", teks: "Jadikan kandungan tetap" }, { nilai: "tidak", teks: "Kekalkan medan boleh diedit" }] });
+for (const slug of ["jpg-ke-pdf", "png-ke-pdf", "imbas-ke-pdf"]) {
+  toolBySlug(slug).options = [
+    { key: "saiz_kertas", jenis: "select", label: "Saiz halaman", pilihan: [{ nilai: "asal", teks: "Saiz gambar asal" }, { nilai: "a4", teks: "A4" }, { nilai: "letter", teks: "Letter" }] },
+    { key: "orientasi", jenis: "select", label: "Orientasi", pilihan: [{ nilai: "potret", teks: "Potret" }, { nilai: "landskap", teks: "Landskap" }] },
+    { key: "margin", jenis: "number", label: "Margin (pt)", default: 20, min: 0, max: 100 }
+  ];
+}
+toolBySlug("putar-pdf").options.push({ key: "halaman", jenis: "text", label: "Halaman untuk diputar (kosong = semua)", placeholder: "1-3,5" });
+toolBySlug("tambah-gambar-pdf").options = [
+  { key: "halaman", jenis: "number", label: "Nombor halaman", default: 1, min: 1 },
+  { key: "x", jenis: "number", label: "Dari kiri (%)", default: 10, min: 0, max: 100 },
+  { key: "y", jenis: "number", label: "Dari atas (%)", default: 10, min: 0, max: 100 },
+  { key: "lebar", jenis: "number", label: "Lebar gambar (%)", default: 40, min: 1, max: 100 }
+];
+toolBySlug("tambah-gambar-pdf").penuh = "Letak satu gambar JPG/PNG pada halaman dan kedudukan pilihan anda.";
+for (const slug of ["pdf-ke-jpg", "pdf-ke-png"]) {
+  toolBySlug(slug).options = [{ key: "dpi", jenis: "select", label: "Resolusi", pilihan: [{ nilai: "150", teks: "150 DPI" }, { nilai: "72", teks: "72 DPI" }, { nilai: "300", teks: "300 DPI" }] }];
+}
+toolBySlug("pdf-ke-word").penuh = "Tukar teks PDF kepada Word yang boleh diedit. Susun atur asal mungkin berubah; PDF imbasan perlu OCR dahulu.";
+toolBySlug("pdf-ke-excel").penuh = "Ekstrak jadual yang dapat dikenal pasti ke Excel. Jika tiada jadual, hasil mengandungi teks mengikut halaman. PDF imbasan perlu OCR dahulu.";
+toolBySlug("pdf-ke-powerpoint").penuh = "Tukar setiap halaman PDF kepada slaid bergambar. Rupa halaman dikekalkan; teks pada slaid tidak boleh diedit.";
+
+Object.assign(toolBySlug("tandatangan-pdf"), { op: "edit", editor: "edit", options: [], penuh: "Lukis tandatangan atau letak gambar tandatangan pada halaman pilihan. Ini tandatangan visual, tanpa sijil digital." });
+
+for (const tool of TOOLS) {
+  for (const option of tool.options || []) {
+    if (option.default === undefined && option.jenis === "number" && /^\d+$/.test(option.placeholder || "")) option.default = Number(option.placeholder);
+  }
+}

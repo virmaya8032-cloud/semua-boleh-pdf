@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import { ALAT } from "../config/tools.js";
 import { proses } from "../services/process.js";
 import { padamFail } from "../utils/files.js";
@@ -30,13 +31,26 @@ export async function prosesFail(req, res) {
 
   try {
     if (!meta) { bersih(); return res.status(404).json({ ralat: "Alat tidak dijumpai." }); }
-    if (fail.length === 0) { return res.status(400).json({ ralat: "Sila muat naik sekurang-kurangnya satu fail." }); }
+    if (fail.length === 0 && (meta.min ?? 1) > 0) { return res.status(400).json({ ralat: "Sila muat naik sekurang-kurangnya satu fail." }); }
 
-    const min = meta.min || 1;
-    const max = meta.max || 30;
+    const min = meta.min ?? 1;
+    const max = meta.max ?? (meta.multiple ? 30 : 1);
     if (fail.length < min) { bersih(); return res.status(400).json({ ralat: `Alat ini memerlukan sekurang-kurangnya ${min} fail.` }); }
     if (fail.length > max) { bersih(); return res.status(400).json({ ralat: `Alat ini menerima maksimum ${max} fail.` }); }
 
+    const types = fail.map((f) => path.extname(f.originalname).toLowerCase());
+    const imageTypes = [".jpg", ".jpeg", ".png"];
+    let allowed = [".pdf"];
+    if (meta.op === "imej-ke-pdf") allowed = imageTypes;
+    if (meta.op === "office-ke-pdf") allowed = slug === "word-ke-pdf" ? [".doc", ".docx"] : slug === "excel-ke-pdf" ? [".xls", ".xlsx"] : [".ppt", ".pptx"];
+    if (meta.op === "html-ke-pdf") allowed = [".html", ".htm"];
+    if (meta.op === "tambah-gambar") allowed = [".pdf", ...imageTypes];
+    if (types.some((ext) => !allowed.includes(ext))) {
+      bersih(); return res.status(400).json({ ralat: "Jenis fail tidak sesuai untuk alat ini." });
+    }
+    if (meta.op === "tambah-gambar" && (types.filter((ext) => ext === ".pdf").length !== 1 || types.filter((ext) => imageTypes.includes(ext)).length !== 1)) {
+      bersih(); return res.status(400).json({ ralat: "Pilih satu fail PDF dan satu gambar JPG/PNG." });
+    }
     // Kumpul pilihan daripada borang; suntik format untuk PDF->imej.
     const opts = { ...req.body };
     if (meta.format) opts._format = meta.format;
