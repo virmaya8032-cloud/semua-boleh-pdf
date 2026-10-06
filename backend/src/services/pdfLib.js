@@ -186,7 +186,7 @@ export async function sensor(input, halaman, yPct, tinggiPct) {
   return doc.save();
 }
 
-export async function tambahTeks(input, teks, halaman, xPct, yPct) {
+export async function tambahTeks(input, teks, halaman, xPct, yPct, saiz) {
   if (!teks || !teks.trim()) throw new Error("Sila masukkan teks.");
   const doc = await muat(input);
   const font = await doc.embedFont(StandardFonts.Helvetica);
@@ -197,7 +197,8 @@ export async function tambahTeks(input, teks, halaman, xPct, yPct) {
   const { width, height } = h.getSize();
   const x = width * ((parseFloat(xPct) || 0) / 100);
   const y = height * (1 - (parseFloat(yPct) || 0) / 100);
-  h.drawText(teks, { x, y, size: 14, font, color: rgb(0, 0, 0) });
+  const saizTeks = Math.min(72, Math.max(6, parseFloat(saiz) || 14));
+  h.drawText(teks, { x, y: y - saizTeks, size: saizTeks, font, color: rgb(0, 0, 0) });
   return doc.save();
 }
 

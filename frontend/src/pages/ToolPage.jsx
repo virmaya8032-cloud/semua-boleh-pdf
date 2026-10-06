@@ -77,7 +77,12 @@ export default function ToolPage() {
       return;
     }
     // Gabungkan pilihan pengguna + medan 'extra' tetap daripada config.
-    const hantaran = { ...(tool.extra || {}), ...pilihan };
+    // Isi nilai lalai untuk menu pilihan (supaya sepadan dengan yang dipaparkan).
+    const lalai = {};
+    for (const o of tool.options || []) {
+      if (o.jenis === "select" && o.pilihan?.length) lalai[o.key] = o.pilihan[0].nilai;
+    }
+    const hantaran = { ...lalai, ...(tool.extra || {}), ...pilihan };
     setPeringkat("proses");
     setKemajuan(0);
     setRalat("");

@@ -74,7 +74,7 @@ export async function proses(op, paths, opts = {}) {
     case "sensor":
       return hasil(simpanBytes(await PL.sensor(p0, opts.halaman, opts.y, opts.tinggi)), "pdf", "dokumen-disensor");
     case "tambah-teks":
-      return hasil(simpanBytes(await PL.tambahTeks(p0, opts.teks, opts.halaman, opts.x, opts.y)), "pdf", "dokumen-diedit");
+      return hasil(simpanBytes(await PL.tambahTeks(p0, opts.teks, opts.halaman, opts.x, opts.y, opts.saiz)), "pdf", "dokumen-diedit");
     case "tambah-gambar":
       return hasil(simpanBytes(await PL.tambahGambar(paths)), "pdf", "dokumen-bergambar");
     case "isi-borang":

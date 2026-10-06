@@ -193,7 +193,7 @@ export const TOOLS = [
     outExt: "pptx",
   },
   {
-    slug: "pdf-ke-jpg", akanDatang: true, nama: "PDF kepada JPG", kategori: "dari-pdf", icon: "Image",
+    slug: "pdf-ke-jpg", nama: "PDF kepada JPG", kategori: "dari-pdf", icon: "Image",
     warna: "#7c3aed",
     ringkas: "Tukar setiap halaman kepada JPG.",
     penuh: "Tukar setiap halaman PDF menjadi gambar JPG (dizipkan).",
@@ -201,7 +201,7 @@ export const TOOLS = [
     extra: { format: "jpg" }, outExt: "zip",
   },
   {
-    slug: "pdf-ke-png", akanDatang: true, nama: "PDF kepada PNG", kategori: "dari-pdf", icon: "Image",
+    slug: "pdf-ke-png", nama: "PDF kepada PNG", kategori: "dari-pdf", icon: "Image",
     warna: "#7c3aed",
     ringkas: "Tukar setiap halaman kepada PNG.",
     penuh: "Tukar setiap halaman PDF menjadi gambar PNG (dizipkan).",
@@ -271,7 +271,7 @@ export const TOOLS = [
     accept: ".jpg,.jpeg,.png", multiple: true, op: "imej-ke-pdf",
   },
   {
-    slug: "ocr-pdf", akanDatang: true, nama: "OCR PDF", kategori: "tambahan", icon: "TextSearch",
+    slug: "ocr-pdf", nama: "OCR PDF", kategori: "tambahan", icon: "TextSearch",
     warna: "#0891b2",
     ringkas: "Jadikan PDF imbasan boleh dicari.",
     penuh: "Kenal pasti teks dalam PDF imbasan supaya kandungan boleh dicari dan disalin.",
@@ -310,13 +310,14 @@ export const TOOLS = [
     accept: ".pdf,.jpg,.jpeg,.png", multiple: true, minFiles: 2, maxFiles: 2, op: "tambah-gambar",
   },
   {
-    slug: "edit-pdf", akanDatang: true, nama: "Edit PDF", kategori: "tambahan", icon: "PenSquare",
+    slug: "edit-pdf", nama: "Edit PDF", kategori: "tambahan", icon: "PenSquare",
     warna: "#0891b2",
     ringkas: "Tambah teks & anotasi ringkas.",
     penuh: "Edit ringkas: tambah teks pada halaman PDF (sama seperti Tambah Teks).",
     accept: ".pdf", multiple: false, op: "tambah-teks",
     options: [
       { key: "teks", jenis: "text", label: "Teks anotasi", placeholder: "Teks" },
+      { key: "saiz", jenis: "number", label: "Saiz teks (pt)", placeholder: "14", min: 6, max: 72 },
       { key: "halaman", jenis: "number", label: "Nombor halaman", placeholder: "1", min: 1 },
       { key: "x", jenis: "number", label: "Kedudukan mendatar (%)", placeholder: "10", min: 0, max: 100 },
       { key: "y", jenis: "number", label: "Kedudukan menegak (%)", placeholder: "10", min: 0, max: 100 },
