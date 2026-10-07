@@ -13,12 +13,13 @@ export async function periksaPdf(req, res) {
   const files = req.files || [];
   let output;
   try {
-    if (files.length !== 1 || path.extname(files[0].originalname).toLowerCase() !== '.pdf') throw new Error('Pilih satu fail PDF.');
+    const scan = req.body.mode === 'scan';
+    if (files.length !== 1 || !(scan ? ['.jpg','.jpeg','.png'] : ['.pdf']).includes(path.extname(files[0].originalname).toLowerCase())) throw new Error(scan ? 'Pilih satu gambar JPG atau PNG.' : 'Pilih satu fail PDF.');
     if (req.body.mode === 'forms') {
       res.setHeader('Cache-Control', 'no-store');
       return res.json(await periksaBorang(files[0].path));
     }
-    output = await pythonPdf(req.body.mode === 'find' ? 'pratonton-ganti' : 'inspect', [files[0].path], { ...req.body, halaman: req.body.halaman || 1, mode: req.body.mode }, 'json');
+    output = await pythonPdf(scan ? 'scan-inspect' : req.body.mode === 'find' ? 'pratonton-ganti' : 'inspect', [files[0].path], { ...req.body, halaman: req.body.halaman || 1, mode: req.body.mode }, 'json');
     res.setHeader('Cache-Control', 'no-store');
     res.json(JSON.parse(fs.readFileSync(output, 'utf8')));
   } catch (error) {

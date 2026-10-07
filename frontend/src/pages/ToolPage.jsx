@@ -27,6 +27,7 @@ export default function ToolPage() {
   const [kemajuan, setKemajuan] = useState(0);
   const [hasil, setHasil] = useState(null);
   const [resultBlob,setResultBlob]=useState(null),[nextTool,setNextTool]=useState('edit-pdf');
+  const [scanBusy,setScanBusy]=useState(false);
   const [ralat, setRalat] = useState("");
   const [previewUrl, setPreviewUrl] = useState(null);
   const [resultBytes, setResultBytes] = useState(0);
@@ -57,7 +58,7 @@ export default function ToolPage() {
   }, [tool]);
 
   useEffect(() => {
-    setFail(location.state?.document ? [location.state.document] : []); setPilihan({}); setResultBlob(null); setHasil(null); setRalat(""); setPeringkat("pilih"); setKemajuan(0); setPreviewUrl(null); setResultBytes(0); setTextResult('');
+    setScanBusy(false);setFail(location.state?.document ? [location.state.document] : []); setPilihan({}); setResultBlob(null); setHasil(null); setRalat(""); setPeringkat("pilih"); setKemajuan(0); setPreviewUrl(null); setResultBytes(0); setTextResult('');
     return()=>currentRequest.current?.abort();
   }, [slug,location.key]);
 
@@ -86,9 +87,10 @@ export default function ToolPage() {
       return gabung.slice(0, maxFiles);
     });
   };
-  const buangFail = (i) => {if(slug==='scan-kamera')ubahPilihan('penjuru','{}');setFail((s) => s.filter((_, idx) => idx !== i));};
+  const simpanPenjuruSusunan = order => {if(slug!=='scan-kamera')return;setPilihan(p=>{const old=JSON.parse(p.penjuru||'{}'),next={};order.forEach((from,to)=>{if(old[from])next[to]=old[from];});return {...p,penjuru:JSON.stringify(next)};});};
+  const buangFail = (i) => {simpanPenjuruSusunan(fail.map((_,idx)=>idx).filter(idx=>idx!==i));setFail((s) => s.filter((_, idx) => idx !== i));};
   const susunFail = (dari, ke) => {
-    if(slug==='scan-kamera')ubahPilihan('penjuru','{}');
+    const order=fail.map((_,idx)=>idx);const [moved]=order.splice(dari,1);order.splice(ke,0,moved);simpanPenjuruSusunan(order);
     setFail((s) => {
       const salin = [...s];
       const [item] = salin.splice(dari, 1);
@@ -120,7 +122,7 @@ export default function ToolPage() {
     if(slug==='aliran-kerja'&&!JSON.parse(hantaran.langkah||'[]').length){setRalat('Tambah sekurang-kurangnya satu langkah.');return;}
     if(slug==='urus-halaman'&&!JSON.parse(hantaran.susunan_halaman||'[]').length){setRalat('Pilih sekurang-kurangnya satu halaman.');return;}
     if(slug==='ai-pdf'&&hantaran.ai_setuju!=='ya'){setRalat('Tandakan persetujuan penggunaan AI dahulu.');return;}
-    if(slug==='scan-kamera'&&Object.values(JSON.parse(hantaran.penjuru||'{}')).some(p=>p.length!==4)){setRalat('Lengkapkan empat penjuru atau tekan Reset untuk guna pengesanan automatik.');return;}
+    if(slug==='scan-kamera'&&Object.values(JSON.parse(hantaran.penjuru||'{}')).some(p=>p.length!==4)){setRalat('Tarik empat penjuru ke tepi kertas atau tekan Reset penjuru.');return;}
     if (pageMode && !String(hantaran[pageKey] || '').trim()) { setRalat('Pilih sekurang-kurangnya satu halaman pada pratonton.'); return; }
     for (const o of tool.options || []) {
       if (o.required && !(slug==='isi-borang-pdf'&&o.key==='data') && !String(hantaran[o.key] ?? "").trim()) { setRalat(`Sila isi ${o.label}.`); return; }
@@ -225,7 +227,7 @@ export default function ToolPage() {
             {tool.editor === "form" && <p className="mt-2 text-sm text-gray-500">Muat naik PDF sebagai templat, atau terus tambah medan pada halaman A4 kosong di bawah.</p>}
             {tool.editor && (fail.length > 0 || tool.editor === "form") && <PdfEditor key={`${slug}-${fail[0]?.name || "blank"}-${fail[0]?.lastModified || ''}`} file={fail[0]} mode={tool.editor} onSave={proses} initialKind={tool.initialKind} initialPictureFile={location.state?.signature} fieldValues={pilihan.field_values} onFieldChange={value=>ubahPilihan('field_values',value)} value={pilihan[tool.editor === "form" ? "medan" : "anotasi"]} onChange={(value) => ubahPilihan(tool.editor === "form" ? "medan" : "anotasi", value)} />}
             {slug==='urus-halaman'&&fail.length>0&&<PageOrganizer key={fail.map(f=>f.name+f.lastModified).join('|')} files={fail} value={pilihan.susunan_halaman} onChange={value=>ubahPilihan('susunan_halaman',value)}/>}
-            {slug==='scan-kamera'&&<CameraScan files={fail} onFiles={files=>{tambahFail(files);ubahPilihan('penjuru','{}');}} value={pilihan.penjuru} onChange={value=>ubahPilihan('penjuru',value)}/>}
+            {slug==='scan-kamera'&&<CameraScan files={fail} onFiles={tambahFail} value={pilihan.penjuru} onBusy={setScanBusy} onChange={value=>ubahPilihan('penjuru',value)}/>}
             {slug==='ai-pdf'&&<p className="mt-3 text-sm text-gray-600">Secara lalai, AI memerlukan <Link className="text-merah underline" to="/log-masuk">log masuk</Link> dan pengaktifan oleh pentadbir. Jawapan akan mempunyai petikan serta rujukan halaman.</p>}
             {slug==='aliran-kerja'&&fail.length>0&&<WorkflowControls value={pilihan.langkah} onChange={value=>ubahPilihan('langkah',value)}/>}
             {slug==='proses-kelompok'&&fail.length>0&&<BatchControls value={pilihan} onChange={value=>setPilihan(p=>({...p,...value}))}/>}
@@ -278,7 +280,7 @@ export default function ToolPage() {
             {slug==='cari-ganti'&&fail[0]&&<FindPreview file={fail[0]} value={{huruf:'tidak',seluruh:'ya',...pilihan}}/>}
             {ralat && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-merah">{ralat}</p>}
 
-            <button onClick={proses} disabled={fail.length < minFiles} className="btn-utama mt-6 w-full text-base">
+            <button onClick={proses} disabled={fail.length < minFiles || (slug==='scan-kamera' && scanBusy)} className="btn-utama mt-6 w-full text-base">
               {tool.editor ? 'Simpan & pratonton PDF' : tool.noFile ? "Cipta PDF" : tool.nama}
             </button>
           </>

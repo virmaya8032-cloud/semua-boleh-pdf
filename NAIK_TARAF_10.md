@@ -32,9 +32,11 @@ Fail diproses satu demi satu supaya RAM tidak melonjak. Selepas 20 minit, tiada 
 
 Buka **Scan Kamera ke PDF** dan tekan **Ambil gambar dengan kamera**. Kawalan kamera disokong mengikut peranti/pelayar; komputer boleh membuka pemilih fail biasa. JPG/PNG juga boleh dimuat naik.
 
-Sistem cuba mengesan tepi kertas. Jika pengesanan tidak tepat, klik empat penjuru: **atas kiri → atas kanan → bawah kanan → bawah kiri**. Perspektif diluruskan menggunakan kawasan itu. Reset penjuru untuk kembali kepada pengesanan automatik atau gambar penuh. Pilih warna asal, cerahkan atau hitam putih sebelum simpan.
+Empat bulatan penjuru terus dipaparkan, tanpa perlu klik empat titik mengikut urutan. Sistem cuba mengesan tepi kertas apabila gambar dipilih. Tarik bulatan ke penjuru sebenar; kawasan gelap akan dibuang. Kanta pembesar muncul semasa menyeret dan penjuru tidak boleh bersilang. Pemegang menyokong sentuhan, tetikus dan kekunci anak panah (Shift untuk gerakan lebih besar).
 
-Dokumen scan menjadi PDF bergambar. Sambung ke OCR untuk carian/salin teks. Foto kompleks atau tepi tidak jelas mungkin tidak dikesan; dalam keadaan itu gambar penuh digunakan. Maksimum 25 megapiksel setiap gambar; gambar dikecilkan sebelum pemprosesan. Mengubah susunan/buang gambar mereset penjuru supaya koordinat tidak digunakan pada gambar salah.
+Tekan **Kesan tepi automatik** untuk cuba semula atau **Reset penjuru gambar ini** untuk kembali kepada kotak awal. Jika tepi tidak jelas atau pelayan tidak dapat dihubungi, empat penjuru lalai masih boleh dilaras secara manual. Tekan **Pratonton crop** untuk melihat kertas yang sudah dipotong dan diluruskan. Pratonton menggunakan warna asal; PDF akhir menggunakan pilihan warna asal, cerahkan atau hitam putih. Selepas melaras penjuru lagi, pratonton lama dipadam supaya tidak mengelirukan.
+
+Dokumen scan menjadi PDF bergambar. Sambung ke OCR untuk carian/salin teks. Pengesanan automatik boleh tersasar pada foto kompleks; semak empat penjuru sebelum membuat PDF. Maksimum 25 megapiksel setiap gambar; gambar dikecilkan sebelum pemprosesan. Koordinat crop dikekalkan bersama gambar apabila susunan diubah atau gambar lain dibuang. Setiap gambar perlu dipilih untuk menyemak crop sendiri; gambar yang belum disemak menggunakan pengesanan backend sedia ada.
 
 ## 5. PDF kepada Word lebih kemas
 
@@ -102,7 +104,7 @@ Had: maksimum 300 halaman sumber, 120,000 aksara konteks setiap permintaan, 2,00
 
 ## Pengesahan
 
-**110 ujian backend dan 24 ujian frontend lulus.** Frontend berjaya dibina untuk produksi. Kebergantungan Python yang dipin dalam requirements diuji menggunakan persekitaran berasingan.
+**114 ujian backend dan 27 ujian frontend lulus.** Frontend berjaya dibina untuk produksi. Kebergantungan Python yang dipin dalam requirements diuji menggunakan persekitaran berasingan.
 
 Ujian merangkumi dokumen sebenar, jadual/gambar DOCX, alpha PNG, scan perspektif, penggantian/pemadaman teks, gabungan halaman, aliran beberapa langkah, kelompok separa gagal, automasi nama/pisah/lampiran dan batas input.
 

@@ -1,6 +1,12 @@
 # Semua Boleh PDF — 56 alat dan 10 naik taraf
 
-Dikemas kini pada 6 Oktober 2026. Kod ini menambah fungsi setara pada projek sedia ada menggunakan komponen PDF sumber terbuka. Ia bukan kod sumber PDF24. Jenama, reka bentuk, akaun pengguna dan panel pentadbir dikekalkan.
+Dikemas kini pada 7 Oktober 2026. Kod ini menambah fungsi setara pada projek sedia ada menggunakan komponen PDF sumber terbuka. Ia bukan kod sumber PDF24. Jenama, reka bentuk, akaun pengguna dan panel pentadbir dikekalkan.
+
+## Crop kamera dengan pemegang penjuru (7 Oktober 2026)
+
+Paparan **Scan Kamera ke PDF** kini menggunakan empat pemegang yang boleh diseret, kawasan luar digelapkan, kanta pembesar dan pengesanan tepi yang boleh disemak pada gambar. Garisan bersilang dan kawasan terlalu kecil dihalang. Pratonton menunjukkan hasil crop yang diluruskan sebelum membuat PDF; ia dikosongkan selepas penjuru diubah. Respons pengesanan yang lambat tidak menimpa pelarasan pengguna. Koordinat kekal bersama gambar selepas susunan diubah atau gambar lain dibuang.
+
+Frontend dan backend perlu dideploy semula bersama untuk mengaktifkan pratonton dan pengesanan tepi pada paparan. Perubahan kod dalam ZIP ini belum diterbitkan ke laman anda. Ujian sentuhan pada telefon sebenar masih perlu dibuat selepas deploy.
 
 ## Naik taraf terkini: 10 fungsi
 
@@ -108,13 +114,13 @@ ZIP hanya mengandungi kod sumber. Jangan upload folder `node_modules` atau fail 
 ## Pengesahan dalam persekitaran pembangunan
 
 - Katalog frontend dan backend sepadan: 56 alat.
-- 110 ujian backend lulus: operasi 37 alat, suntingan teks asal, perkataan bersebelahan/latar/gambar, baris berbilang font, putaran 90°/180°/270°, halaman crop, piksel teks OCR, borang automatik dan input tidak sah. Ujian baharu turut meliputi crop empat putaran, gambar tegak pada empat putaran, isi borang bersama suntingan teks, urutan dua lajur, laporan HTML dan OCR pada PDF imej sebenar.
-- 21 ujian interaksi frontend dalam DOM lulus: klik/taip/padam, Undo/Redo, pilihan halaman, susunan, item invois, borang automatik, fail salah jenis dan sambung edit; termasuk seret crop, letak/alih tandatangan, isi pada PDF dan pratonton teks.
+- 114 ujian backend lulus: operasi 37 alat, suntingan teks asal, perkataan bersebelahan/latar/gambar, baris berbilang font, putaran 90°/180°/270°, halaman crop, piksel teks OCR, borang automatik dan input tidak sah. Ujian baharu turut meliputi crop empat putaran, gambar tegak pada empat putaran, isi borang bersama suntingan teks, urutan dua lajur, laporan HTML dan OCR pada PDF imej sebenar.
+- 24 ujian interaksi frontend dalam DOM lulus: klik/taip/padam, Undo/Redo, pilihan halaman, susunan, item invois, borang automatik, fail salah jenis dan sambung edit; termasuk seret crop, letak/alih tandatangan, isi pada PDF dan pratonton teks.
 - 3 ujian klien API lulus: menunggu kerja selesai, mesej kegagalan dan berhenti meminta status apabila meninggalkan halaman.
 - Empat aliran API terdahulu lulus: cipta invois, editor, sensor, cipta borang; termasuk muat turun hasil.
 - API baharu turut lulus: kenal pasti perkataan → ganti teks → muat turun; kenal pasti medan → isi borang → muat turun; input tiada fail dan anotasi terlalu besar ditolak.
 - API kerja latar lulus untuk crop, gambar visual melebihi 1 MB, isi borang dengan teks, TXT, laporan HTML dan kegagalan kerja. Respons pemprosesan terus tidak tersekat walaupun sambungan pangkalan data ujian sengaja tidak menjawab.
-- 26 ujian naik taraf backend tambahan (termasuk induk) dan 7 ujian API tambahan (termasuk induk) termasuk dalam jumlah 110. Ujian tambahan frontend untuk 10 naik taraf termasuk dalam jumlah 24 (21 DOM + 3 klien API).
+- 29 ujian naik taraf backend tambahan (termasuk induk) dan 8 ujian API tambahan (termasuk induk) termasuk dalam jumlah 114. Ujian tambahan frontend untuk 10 naik taraf termasuk dalam jumlah 27 (24 DOM + 3 klien API).
 - Frontend berjaya dibina untuk produksi.
 - Ujian DOM tidak menggantikan semakan pelayar sebenar. Ujian Chromium/paparan fizikal belum dijalankan kerana pelayar tidak tersedia; semak pada komputer/telefon selepas deploy.
 - Penukaran Office→PDF, PDF/A dan fungsi qpdf perlu diuji selepas deploy Docker; binari LibreOffice/qpdf tidak tersedia dalam persekitaran ujian ini. OCR bahasa Inggeris diuji pada PDF imbasan imej tanpa teks asal; bahasa Melayu/Tamil belum diuji dalam persekitaran tempatan ini.

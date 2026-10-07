@@ -1,10 +1,10 @@
 """Additional document operations; no shell and no external document services."""
-import io,json,re,os,zipfile,csv,math
+import io,json,re,os,zipfile,csv,math,base64
 import fitz
 from PIL import Image,ImageOps
 from pdf_tools import opened,save,number,text,replacement_font,color_value
 from text_reports import ordered_text
-OPS={'urus-halaman','scan-kamera','tandatangan-telus','cari-ganti','pratonton-ganti','automasi','ai-context','word-layout'}
+OPS={'scan-inspect','urus-halaman','scan-kamera','tandatangan-telus','cari-ganti','pratonton-ganti','automasi','ai-context','word-layout'}
 
 def parse(opts,key,default):
  try:return json.loads(opts.get(key,json.dumps(default)))
@@ -49,22 +49,33 @@ def load_image(path):
   im.close();raise ValueError('Gambar terlalu besar. Kecilkan kepada maksimum 25 megapiksel.')
  return ImageOps.exif_transpose(im)
 
-def scan_image(path,opts,corners=None):
+def detect_corners(a):
  import cv2,numpy as np
- im=load_image(path).convert('RGB');im.thumbnail((2400,3200))
+ h,w=a.shape[:2]
+ # Detect on a small copy so previews stay responsive even for camera photos.
+ scale=min(1,1000/max(h,w));small=cv2.resize(a,(max(1,int(w*scale)),max(1,int(h*scale)))) if scale<1 else a
+ gray=cv2.cvtColor(small,cv2.COLOR_RGB2GRAY);edges=cv2.Canny(cv2.GaussianBlur(gray,(5,5),0),40,130)
+ edges=cv2.morphologyEx(edges,cv2.MORPH_CLOSE,np.ones((3,3),np.uint8))
+ contours,_=cv2.findContours(edges,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+ for contour in sorted(contours,key=cv2.contourArea,reverse=True)[:30]:
+  poly=cv2.approxPolyDP(contour,.025*cv2.arcLength(contour,True),True)
+  if len(poly)!=4 or not cv2.isContourConvex(poly) or cv2.contourArea(poly)<small.shape[0]*small.shape[1]*.2:continue
+  p=poly.reshape(4,2).astype(np.float32)/scale
+  # Sort around the centre, then start at the upper-left corner. This avoids
+  # duplicate vertices from independent sum/difference extrema on diamonds.
+  centre=p.mean(axis=0);p=p[np.argsort(np.arctan2(p[:,1]-centre[1],p[:,0]-centre[0]))];p=np.roll(p,-int(p.sum(axis=1).argmin()),axis=0)
+  if cv2.isContourConvex(p.reshape(-1,1,2)):return p
+ return None
+
+def scan_image(path,opts,corners=None,max_size=(2400,3200)):
+ import cv2,numpy as np
+ im=load_image(path).convert('RGB');im.thumbnail(max_size)
  a=np.array(im);h,w=a.shape[:2]
  points=None
  if corners:
   if not isinstance(corners,list) or len(corners)!=4:raise ValueError('Tandakan empat penjuru mengikut urutan.')
   points=np.array([[number(p,'x',0,0,100)*w/100,number(p,'y',0,0,100)*h/100] for p in corners],dtype=np.float32)
- elif opts.get('auto_tepi','ya')=='ya':
-  gray=cv2.cvtColor(a,cv2.COLOR_RGB2GRAY);edges=cv2.Canny(cv2.GaussianBlur(gray,(5,5),0),40,130)
-  contours,_=cv2.findContours(edges,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-  for contour in sorted(contours,key=cv2.contourArea,reverse=True)[:10]:
-   poly=cv2.approxPolyDP(contour,.025*cv2.arcLength(contour,True),True)
-   if len(poly)==4 and cv2.isContourConvex(poly) and cv2.contourArea(poly)>w*h*.2:
-    p=poly.reshape(4,2).astype(np.float32);s=p.sum(axis=1);diff=np.diff(p,axis=1).ravel()
-    points=np.array([p[s.argmin()],p[diff.argmin()],p[s.argmax()],p[diff.argmax()]],dtype=np.float32);break
+ elif opts.get('auto_tepi','ya')=='ya':points=detect_corners(a)
  if points is not None:
   contour=points.reshape(-1,1,2)
   if not cv2.isContourConvex(contour) or abs(cv2.contourArea(contour))<w*h*.01:raise ValueError('Penjuru bersilang atau kawasan terlalu kecil. Pilih atas kiri, atas kanan, bawah kanan, bawah kiri.')
@@ -76,6 +87,15 @@ def scan_image(path,opts,corners=None):
  image=Image.fromarray(a);data=io.BytesIO();image.save(data,format='JPEG',quality=90);return data.getvalue(),image.size
 
 def run(op,paths,opts,output):
+ if op=='scan-inspect':
+  import numpy as np
+  im=load_image(paths[0]).convert('RGB');im.thumbnail((1000,1400));a=np.array(im);h,w=a.shape[:2]
+  supplied=parse(opts,'penjuru',None);detected=None if supplied else detect_corners(a)
+  points=supplied or ([{'x':float(p[0]/w*100),'y':float(p[1]/h*100)} for p in detected] if detected is not None else [{'x':6,'y':6},{'x':94,'y':6},{'x':94,'y':94},{'x':6,'y':94}])
+  data,size=scan_image(paths[0],{'auto_tepi':'tidak','bersih':'warna'},points,(1000,1400))
+  preview=Image.open(io.BytesIO(data));preview.thumbnail((900,1200));buffer=io.BytesIO();preview.save(buffer,'JPEG',quality=82)
+  with open(output,'w') as f:json.dump({'penjuru':points,'dikesan':detected is not None,'pratonton':'data:image/jpeg;base64,'+base64.b64encode(buffer.getvalue()).decode()},f)
+  return
  if op=='tandatangan-telus':
   import numpy as np
   im=load_image(paths[0]).convert('RGBA');im.thumbnail((2000,2000));threshold=number(opts,'ambang',220,100,250)
