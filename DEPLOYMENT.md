@@ -136,3 +136,9 @@ Selesai! Buka URL Netlify anda dan cuba muat naik PDF.
 - Tukar `ADMIN_PASSWORD` kepada kata laluan yang kukuh dan unik.
 - Pastikan `JWT_SECRET` ialah rentetan rawak yang panjang dan rahsia.
 - Jangan pernah commit fail `.env` sebenar ke GitHub (sudah disekat oleh `.gitignore`).
+
+## Kebergantungan naik taraf PDF
+
+Deploy semula backend Docker selepas kemas kini `requirements.txt` (pdf2docx, OpenCV headless, NumPy dan Pillow). Frontend baharu memerlukan backend baharu untuk alat serta API kerja latar.
+
+AI PDF dimatikan secara lalai. Untuk aktif, tetapkan `OPENAI_API_KEY` dan `OPENAI_MODEL` di Environment backend; model mesti menyokong Responses API dan Structured Outputs. Jangan letak kunci dalam frontend atau repo. `AI_ALLOW_PUBLIC=false` mewajibkan log masuk. Lihat `NAIK_TARAF_10.md`.

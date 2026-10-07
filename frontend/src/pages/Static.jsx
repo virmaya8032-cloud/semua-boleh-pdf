@@ -48,7 +48,7 @@ export function Security() {
   const item = [
     { Icon: Lock, t: "Sambungan disulitkan", d: "Semua pemindahan fail dilindungi melalui HTTPS/TLS." },
     { Icon: Trash2, t: "Pemadaman automatik", d: "Fail input dan output dipadam sejurus selepas diproses atau dimuat turun." },
-    { Icon: Server, t: "Pemprosesan pelayan", d: "Pemprosesan dijalankan pada pelayan terkawal, bukan dikongsi dengan pihak ketiga." },
+    { Icon: Server, t: "Pemprosesan pelayan", d: "Alat biasa diproses pada pelayan kami. AI PDF menghantar teks halaman pilihan kepada OpenAI dengan persetujuan anda." },
     { Icon: ShieldCheck, t: "Tiada penyimpanan kandungan", d: "Kami hanya menyimpan metadata penggunaan (jenis alat & saiz), bukan kandungan fail." },
   ];
   return (
@@ -78,11 +78,11 @@ export function Privacy() {
       </Perenggan>
       <Perenggan h="Fail anda">
         Fail yang dimuat naik diproses buat sementara dan dipadam secara automatik dalam masa
-        beberapa minit. Kami tidak membaca, berkongsi atau menjual kandungan dokumen anda.
+        beberapa minit. Kami tidak menjual kandungan dokumen anda. Bagi AI PDF sahaja, teks halaman pilihan dihantar kepada OpenAI selepas anda menandakan persetujuan. Pemprosesan oleh penyedia AI tertakluk pada dasar perkhidmatannya.
       </Perenggan>
       <Perenggan h="Kuki">
         Kami menggunakan storan tempatan untuk menyimpan token log masuk anda supaya anda kekal log
-        masuk. Kami tidak menggunakan kuki penjejakan pihak ketiga.
+        masuk. Preset aliran kerja juga boleh disimpan dalam pelayar; preset tidak mengandungi fail dokumen. Kami tidak menggunakan kuki penjejakan pihak ketiga.
       </Perenggan>
       <Perenggan h="Hak anda">
         Anda boleh memadam sejarah penggunaan anda pada bila-bila masa melalui papan pemuka, atau

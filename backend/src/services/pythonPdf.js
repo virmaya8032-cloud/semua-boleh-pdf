@@ -10,7 +10,7 @@ export async function pythonPdf(op, paths, opts = {}, extension = "pdf") {
     await new Promise((resolve, reject) => {
       const child = spawn(process.env.PYTHON_BIN || "python3", [script], { shell: false });
       let stdout = "";
-      const timer = setTimeout(() => { child.kill("SIGKILL"); reject(new Error("Pemprosesan terlalu lama. Cuba fail yang lebih kecil.")); }, ["pdf-ke-word","pdf-ke-excel","pdf-ke-powerpoint","nup","overlay"].includes(op) ? 300000 : 120000);
+      const timer = setTimeout(() => { child.kill("SIGKILL"); reject(new Error("Pemprosesan terlalu lama. Cuba fail yang lebih kecil.")); }, ["word-layout","scan-kamera","automasi","urus-halaman","pdf-ke-word","pdf-ke-excel","pdf-ke-powerpoint","nup","overlay"].includes(op) ? 300000 : 120000);
       child.stdout.on("data", (chunk) => { stdout += chunk; });
       child.stderr.on("data", () => {});
       child.stdin.on("error", () => {});

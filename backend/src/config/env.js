@@ -2,6 +2,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const env = {
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
+  OPENAI_MODEL: process.env.OPENAI_MODEL || '',
+  AI_ALLOW_PUBLIC: process.env.AI_ALLOW_PUBLIC === 'true',
   PORT: parseInt(process.env.PORT || "4000", 10),
   NODE_ENV: process.env.NODE_ENV || "development",
   DATABASE_URL: process.env.DATABASE_URL || "",

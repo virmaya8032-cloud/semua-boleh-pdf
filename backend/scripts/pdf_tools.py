@@ -543,7 +543,9 @@ if __name__ == '__main__':
     try:
         request = json.load(sys.stdin)
         output = request['output']
-        process(request['op'],request['paths'],request.get('opts',{}),output)
+        from upgrades import OPS, run
+        if request['op'] in OPS: run(request['op'],request['paths'],request.get('opts',{}),output)
+        else: process(request['op'],request['paths'],request.get('opts',{}),output)
         print(json.dumps({'ok':True}))
     except Exception as error:
         if output and os.path.isfile(output):

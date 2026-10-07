@@ -1,8 +1,14 @@
-# Semua Boleh PDF — 47 alat, editor visual dan pemprosesan baharu
+# Semua Boleh PDF — 56 alat dan 10 naik taraf
 
 Dikemas kini pada 6 Oktober 2026. Kod ini menambah fungsi setara pada projek sedia ada menggunakan komponen PDF sumber terbuka. Ia bukan kod sumber PDF24. Jenama, reka bentuk, akaun pengguna dan panel pentadbir dikekalkan.
 
-## Tujuh pembaikan dalam kemas kini ini
+## Naik taraf terkini: 10 fungsi
+
+Katalog kini mempunyai **56 alat**. Baca **NAIK_TARAF_10.md** untuk aliran kerja bersambung, pengurusan halaman beberapa PDF, proses kelompok, scan kamera, Word dengan susun atur, cari/ganti, tandatangan telus, mampatan sasaran, automasi dokumen dan AI PDF. Panduan itu menerangkan cara guna, had dan tetapan AI/backend.
+
+Bahagian di bawah merekodkan pembaikan editor terdahulu yang masih dikekalkan.
+
+## Tujuh pembaikan editor terdahulu
 
 | Permintaan | Perubahan dan cara guna |
 | --- | --- |
@@ -42,7 +48,7 @@ Kerja latar disimpan dalam memori pelayan. Jika pelayan dimulakan semula, jalank
 - **Edit PDF terus:** PDF dipaparkan dengan perkataan boleh diklik. Klik perkataan atau seluruh baris dan terus taip untuk menggantikan teks asal. Boleh padam teks asal, pilih saiz/font/warna/tebal/condong, tambah teks/gambar/lukisan/sorotan, cari perkataan pada halaman, zoom, Undo/Redo dan lompat halaman. Teks asal yang dipilih benar-benar dibuang daripada kandungan PDF hasil. Maksimum 1000 perubahan bagi satu simpanan.
 - **Sensor PDF:** pilih kawasan pada pratonton. Pemprosesan membuang teks, grafik dan piksel imej dalam kawasan itu daripada PDF hasil, serta menulis dokumen baharu tanpa objek lama. Kandungan di luar kawasan kekal. Sensor ini tidak memadam salinan maklumat yang berada pada halaman lain atau salinan fail asal.
 - **Tandatangan:** lukis tandatangan atau letak gambar melalui editor. Ini tandatangan visual, tanpa sijil digital.
-- **PDF kepada Word:** menghasilkan teks yang boleh diedit; bukan susun atur Word yang sama tepat dengan PDF asal.
+- **PDF kepada Word:** pilihan kekalkan susun atur, jadual dan gambar menggunakan pdf2docx, atau teks sahaja. Hasil kompleks masih perlu disemak.
 - **PDF kepada Excel:** jadual yang dikenal pasti diekstrak; jika tiada jadual, teks halaman dimasukkan ke helaian.
 - **PDF kepada PowerPoint:** halaman menjadi slaid bergambar; teks tidak boleh diedit pada slaid. Nisbah halaman dikekalkan.
 - **Banding PDF:** laporan HTML perubahan teks mengikut halaman, dipaparkan sebelah menyebelah. Bukan perbandingan visual gambar.
@@ -101,13 +107,14 @@ ZIP hanya mengandungi kod sumber. Jangan upload folder `node_modules` atau fail 
 
 ## Pengesahan dalam persekitaran pembangunan
 
-- Katalog frontend dan backend sepadan: 47 alat.
-- 77 ujian backend lulus: operasi 37 alat, suntingan teks asal, perkataan bersebelahan/latar/gambar, baris berbilang font, putaran 90°/180°/270°, halaman crop, piksel teks OCR, borang automatik dan input tidak sah. Ujian baharu turut meliputi crop empat putaran, gambar tegak pada empat putaran, isi borang bersama suntingan teks, urutan dua lajur, laporan HTML dan OCR pada PDF imej sebenar.
-- 14 ujian interaksi frontend dalam DOM lulus: klik/taip/padam, Undo/Redo, pilihan halaman, susunan, item invois, borang automatik, fail salah jenis dan sambung edit; termasuk seret crop, letak/alih tandatangan, isi pada PDF dan pratonton teks.
+- Katalog frontend dan backend sepadan: 56 alat.
+- 110 ujian backend lulus: operasi 37 alat, suntingan teks asal, perkataan bersebelahan/latar/gambar, baris berbilang font, putaran 90°/180°/270°, halaman crop, piksel teks OCR, borang automatik dan input tidak sah. Ujian baharu turut meliputi crop empat putaran, gambar tegak pada empat putaran, isi borang bersama suntingan teks, urutan dua lajur, laporan HTML dan OCR pada PDF imej sebenar.
+- 21 ujian interaksi frontend dalam DOM lulus: klik/taip/padam, Undo/Redo, pilihan halaman, susunan, item invois, borang automatik, fail salah jenis dan sambung edit; termasuk seret crop, letak/alih tandatangan, isi pada PDF dan pratonton teks.
 - 3 ujian klien API lulus: menunggu kerja selesai, mesej kegagalan dan berhenti meminta status apabila meninggalkan halaman.
 - Empat aliran API terdahulu lulus: cipta invois, editor, sensor, cipta borang; termasuk muat turun hasil.
 - API baharu turut lulus: kenal pasti perkataan → ganti teks → muat turun; kenal pasti medan → isi borang → muat turun; input tiada fail dan anotasi terlalu besar ditolak.
 - API kerja latar lulus untuk crop, gambar visual melebihi 1 MB, isi borang dengan teks, TXT, laporan HTML dan kegagalan kerja. Respons pemprosesan terus tidak tersekat walaupun sambungan pangkalan data ujian sengaja tidak menjawab.
+- 26 ujian naik taraf backend tambahan (termasuk induk) dan 7 ujian API tambahan (termasuk induk) termasuk dalam jumlah 110. Ujian tambahan frontend untuk 10 naik taraf termasuk dalam jumlah 24 (21 DOM + 3 klien API).
 - Frontend berjaya dibina untuk produksi.
 - Ujian DOM tidak menggantikan semakan pelayar sebenar. Ujian Chromium/paparan fizikal belum dijalankan kerana pelayar tidak tersedia; semak pada komputer/telefon selepas deploy.
 - Penukaran Office→PDF, PDF/A dan fungsi qpdf perlu diuji selepas deploy Docker; binari LibreOffice/qpdf tidak tersedia dalam persekitaran ujian ini. OCR bahasa Inggeris diuji pada PDF imbasan imej tanpa teks asal; bahasa Melayu/Tamil belum diuji dalam persekitaran tempatan ini.
