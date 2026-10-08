@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { usePdfDocument } from './pdfPreview.js';
 
-function Thumbnail({ doc, number, angle }) {
+export function Thumbnail({ doc, number, angle }) {
   const canvas = useRef(null);
   useEffect(() => {
     let stopped=false, task;

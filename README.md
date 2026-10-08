@@ -1,6 +1,6 @@
 # Semua Boleh PDF
 
-Platform alat PDF dalam talian, **sepenuhnya dalam Bahasa Melayu** — gabung, pisah, mampat, tukar, lindungi dan banyak lagi. Dibina sebagai aplikasi web penuh (full-stack) yang berfungsi, dengan **47 alat PDF**, papan pemuka pengguna & pentadbir, dan pemprosesan fail sebenar di pelayan.
+Platform alat PDF dalam talian, **sepenuhnya dalam Bahasa Melayu** — gabung, pisah, mampat, tukar, lindungi dan banyak lagi. Dibina sebagai aplikasi web penuh (full-stack) yang berfungsi, dengan **56 alat PDF**, papan pemuka pengguna & pentadbir, dan pemprosesan fail sebenar di pelayan.
 
 > Reka bentuk, kod dan jenama adalah tersendiri. Ia bukan salinan mana-mana produk lain — hanya diilhamkan oleh konsep "koleksi alat PDF".
 
@@ -18,7 +18,7 @@ Platform alat PDF dalam talian, **sepenuhnya dalam Bahasa Melayu** — gabung, p
 
 ## Ciri-ciri
 
-**Alat PDF (47)** merentasi 6 kategori:
+**Alat PDF (56)** merentasi 6 kategori:
 - **Pengurusan** — gabung, pisah, padam/ekstrak/susun halaman, putar, nombor halaman, tera air, potong
 - **Mampatan & pembaikan** — mampat, baiki, optimakan
 - **Tukar kepada PDF** — Word, Excel, PowerPoint, JPG, PNG, HTML
@@ -78,7 +78,7 @@ Alat dibahagikan kepada dua jenis dari segi teknikal:
 
 Alat kumpulan (2) akan berjalan apabila backend di-deploy melalui `Dockerfile` yang disediakan (Render, atau mana-mana hos Docker). Jika binari tidak dipasang, alat tersebut memulangkan mesej ralat Bahasa Melayu yang jelas dan bukannya ranap.
 
-**Ketepatan penukaran:** PDF→Word mengekstrak teks; PDF→Excel mengekstrak jadual yang dikenal pasti, atau teks halaman jika tiada jadual; PDF→PowerPoint menghasilkan slaid bergambar. Hasil berbeza mengikut struktur dokumen asal.
+**Ketepatan penukaran:** PDF→Word mempunyai pilihan pdf2docx untuk mengekalkan susun atur, jadual dan gambar, atau teks sahaja; PDF→Excel mengekstrak jadual yang dikenal pasti, atau teks halaman jika tiada jadual; PDF→PowerPoint menghasilkan slaid bergambar. Hasil berbeza mengikut struktur dokumen asal.
 
 ---
 
@@ -129,3 +129,11 @@ npm test --prefix backend
 npm test --prefix frontend
 npm run build --prefix frontend
 ```
+
+## Sepuluh naik taraf terkini
+
+<<<<<<< HEAD
+Lihat [NAIK_TARAF_10.md](NAIK_TARAF_10.md) untuk cara guna, had dan tetapan bagi 10 fungsi tambahan. AI ialah sambungan pilihan kepada Google Gemini, memerlukan GEMINI_API_KEY pada backend dan persetujuan pengguna. Model lalai gemini-2.5-flash-lite mempunyai kuota Free Tier yang terhad. Baca [GEMINI_PERCUMA.md](GEMINI_PERCUMA.md) untuk pengaktifan.
+=======
+Lihat [NAIK_TARAF_10.md](NAIK_TARAF_10.md) untuk cara guna, had dan tetapan bagi 10 fungsi tambahan. AI ialah sambungan pilihan kepada OpenAI, memerlukan kunci/model backend dan persetujuan pengguna.
+>>>>>>> 9af48a51dc0c79c6aeea3f4f9e7166b4890f9ab2

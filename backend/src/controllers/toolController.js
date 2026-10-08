@@ -13,12 +13,13 @@ export async function periksaPdf(req, res) {
   const files = req.files || [];
   let output;
   try {
-    if (files.length !== 1 || path.extname(files[0].originalname).toLowerCase() !== '.pdf') throw new Error('Pilih satu fail PDF.');
+    const scan = req.body.mode === 'scan';
+    if (files.length !== 1 || !(scan ? ['.jpg','.jpeg','.png'] : ['.pdf']).includes(path.extname(files[0].originalname).toLowerCase())) throw new Error(scan ? 'Pilih satu gambar JPG atau PNG.' : 'Pilih satu fail PDF.');
     if (req.body.mode === 'forms') {
       res.setHeader('Cache-Control', 'no-store');
       return res.json(await periksaBorang(files[0].path));
     }
-    output = await pythonPdf('inspect', [files[0].path], { halaman: req.body.halaman || 1, mode: req.body.mode }, 'json');
+    output = await pythonPdf(scan ? 'scan-inspect' : req.body.mode === 'find' ? 'pratonton-ganti' : 'inspect', [files[0].path], { ...req.body, halaman: req.body.halaman || 1, mode: req.body.mode }, 'json');
     res.setHeader('Cache-Control', 'no-store');
     res.json(JSON.parse(fs.readFileSync(output, 'utf8')));
   } catch (error) {
@@ -64,7 +65,7 @@ export async function prosesFail(req, res) {
     const types = fail.map((f) => path.extname(f.originalname).toLowerCase());
     const imageTypes = [".jpg", ".jpeg", ".png"];
     let allowed = [".pdf"];
-    if (meta.op === "imej-ke-pdf") allowed = imageTypes;
+    if (["imej-ke-pdf","scan-kamera","tandatangan-telus"].includes(meta.op)) allowed = imageTypes;
     if (meta.op === "office-ke-pdf") allowed = slug === "word-ke-pdf" ? [".doc", ".docx"] : slug === "excel-ke-pdf" ? [".xls", ".xlsx"] : [".ppt", ".pptx"];
     if (meta.op === "html-ke-pdf") allowed = [".html", ".htm"];
     if (meta.op === "tambah-gambar") allowed = [".pdf", ...imageTypes];
@@ -78,7 +79,8 @@ export async function prosesFail(req, res) {
       bersih(); return res.status(400).json({ralat:'Pilih satu PDF dan muat naik gambar melalui editor.'});
     }
     // Kumpul pilihan daripada borang; suntik format untuk PDF->imej.
-    const opts = { ...req.body };
+    if (meta.op === 'ai-pdf' && !env.AI_ALLOW_PUBLIC && !req.pengguna) { bersih(); return res.status(401).json({ralat:'Log masuk untuk menggunakan AI PDF.'}); }
+    const opts = { ...req.body, nama_asal: JSON.stringify(fail.map(f=>f.originalname)) };
     if (meta.format) opts._format = meta.format;
 
     const hasil = await proses(meta.op, laluan, opts);
@@ -91,6 +93,7 @@ export async function prosesFail(req, res) {
       mesej: "Fail berjaya diproses.",
       muat_turun: `/api/alat/muat-turun/${nama}`,
       nama_fail: hasil.filename,
+      nota: hasil.nota || "",
     });
   } catch (e) {
     bersih();

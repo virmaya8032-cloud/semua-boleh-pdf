@@ -98,3 +98,15 @@ Object.assign(ALAT, {
 });
 
 Object.assign(ALAT["tambah-gambar-pdf"], {min:1,max:2});
+
+Object.assign(ALAT, {
+ 'aliran-kerja':{op:'workflow',nama:'Aliran Kerja PDF'},
+ 'urus-halaman':{op:'urus-halaman',nama:'Urus Halaman PDF',multiple:true,min:1,max:30},
+ 'proses-kelompok':{op:'batch',nama:'Proses Banyak Fail',multiple:true,min:1,max:30},
+ 'scan-kamera':{op:'scan-kamera',nama:'Scan Kamera ke PDF',multiple:true,min:1,max:30},
+ 'cari-ganti':{op:'cari-ganti',nama:'Cari dan Ganti Teks'},
+ 'tandatangan-telus':{op:'tandatangan-telus',nama:'Buang Latar Tandatangan'},
+ 'mampat-sasaran':{op:'mampat-sasaran',nama:'Mampat Ikut Saiz'},
+ 'automasi-dokumen':{op:'automasi',nama:'Automasi Dokumen',multiple:true,min:1,max:30},
+ 'ai-pdf':{op:'ai-pdf',nama:'AI untuk PDF'}
+});

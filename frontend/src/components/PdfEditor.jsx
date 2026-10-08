@@ -8,7 +8,7 @@ const labels = { select: 'Edit perkataan', fields: 'Isi medan borang', crop: 'Cr
 const icons = { select: MousePointer2, text: Type, highlight: Highlighter, box: Square, pen: PenLine, image: ImagePlus, redact: Square, checkbox: Square };
 const originalChange = item => ['replace-text', 'delete-text'].includes(item.jenis);
 
-export default function PdfEditor({ file, mode, value, onChange, initialKind, onSave, fieldValues, onFieldChange }) {
+export default function PdfEditor({ file, mode, value, onChange, initialKind, initialPictureFile, onSave, fieldValues, onFieldChange }) {
   const { doc, error: openError } = usePdfDocument(file);
   const canvas = useRef(null), surface = useRef(null), gesture = useRef(null);
   const history = useRef({ undo: [], redo: [] });
@@ -19,6 +19,7 @@ export default function PdfEditor({ file, mode, value, onChange, initialKind, on
   const [label, setLabel] = useState(mode === 'form' ? 'nama' : 'Teks baharu');
   const [size, setSize] = useState(14), [color, setColor] = useState('#000000');
   const [picture, setPicture] = useState(''), [draft, setDraft] = useState(null);
+  useEffect(()=>{if(initialPictureFile){const reader=new FileReader();reader.onload=()=>{setPicture(reader.result);setKind('image');};reader.readAsDataURL(initialPictureFile);return()=>reader.abort();}},[initialPictureFile]);
   const [layout, setLayout] = useState(null), [checking, setChecking] = useState(false), [layoutError, setLayoutError] = useState('');
   const [selection, setSelection] = useState(null), [unit, setUnit] = useState('words');
   const [zoom, setZoom] = useState(100), [search, setSearch] = useState('');

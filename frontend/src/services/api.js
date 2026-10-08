@@ -18,10 +18,11 @@ async function urus(res) {
 }
 
 export const api = {
-  async periksaPdf(file, halaman, signal, mode) {
+  async periksaPdf(file, halaman, signal, mode, options = {}) {
     const body = new FormData();
     body.append('files', file); body.append('halaman', halaman);
     if (mode) body.append('mode', mode);
+    for(const [key,value] of Object.entries(options)) if(!['files','mode'].includes(key))body.append(key,value);
     return urus(await fetch(url('/alat/periksa'), { method: 'POST', body, signal }));
   },
   async get(laluan) {

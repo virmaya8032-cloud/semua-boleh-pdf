@@ -1,4 +1,6 @@
 import fs from "fs";
+import {aiPdf} from "./aiPdf.js";
+import {batch,workflow,compressTarget} from "./upgradeProcess.js";
 import path from "path";
 import archiver from "archiver";
 import * as PL from "./pdfLib.js";
@@ -14,7 +16,7 @@ function simpanBytes(bytes, ext = "pdf") {
 }
 
 // Zip senarai {nama, bytes} ATAU senarai laluan fail -> pulangkan laluan zip.
-function buatZip(entri) {
+export function buatZip(entri) {
   return new Promise((resolve, reject) => {
     const out = path.join(OUTPUT_DIR, namaRawak("zip"));
     const stream = fs.createWriteStream(out);
@@ -32,6 +34,7 @@ function buatZip(entri) {
 
 const MIME = {
   pdf: "application/pdf",
+  png: "image/png",
   zip: "application/zip",
   txt: "text/plain; charset=utf-8",
   html: "text/html; charset=utf-8",
@@ -48,6 +51,14 @@ function hasil(laluan, ext, namaMesra) {
 export async function proses(op, paths, opts = {}) {
   const p0 = paths[0];
   switch (op) {
+    case 'batch': return batch(paths,opts,proses,buatZip);
+    case 'workflow': return workflow(paths,opts,proses);
+    case 'mampat-sasaran': return compressTarget(p0,opts);
+    case 'ai-pdf': return aiPdf(paths,opts);
+    case 'tandatangan-telus': return hasil(await pythonPdf(op,paths,opts,'png'),'png','tandatangan-telus');
+    case 'automasi': return hasil(await pythonPdf(op,paths,opts,'zip'),'zip','automasi-dokumen');
+    case 'urus-halaman': case 'scan-kamera': case 'cari-ganti': return hasil(await pythonPdf(op,paths,opts),'pdf',op);
+
     case "gabung":
       return hasil(simpanBytes(await PL.gabung(paths)), "pdf", "gabungan");
     case "pisah": {
@@ -105,7 +116,7 @@ export async function proses(op, paths, opts = {}) {
     case "html-ke-pdf":
       return hasil(await BIN.htmlKePdf(p0), "pdf", "dokumen");
     case "pdf-ke-office":
-      return hasil(await pythonPdf("pdf-ke-word", paths, opts, "docx"), "docx", "dokumen");
+      return hasil(await pythonPdf(opts.mod_word === "teks" ? "pdf-ke-word" : "word-layout", paths, opts, "docx"), "docx", "dokumen");
     case "pdf-ke-excel":
       return hasil(await pythonPdf("pdf-ke-excel", paths, opts, "xlsx"), "xlsx", "dokumen");
     case "pdf-ke-pptx":

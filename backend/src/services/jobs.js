@@ -4,7 +4,7 @@ import {prosesFail} from '../controllers/toolController.js';
 const jobs=new Map(),queue=[];
 const running={heavy:0,light:0};
 const limits={heavy:1,light:2};
-const heavySlugs=new Set(["ocr-pdf","word-ke-pdf","excel-ke-pdf","powerpoint-ke-pdf","html-ke-pdf","pdf-a","pdf-ke-powerpoint","pdf-ke-jpg","pdf-ke-png","mampat-pdf"]);
+const heavySlugs=new Set(["aliran-kerja","proses-kelompok","scan-kamera","mampat-sasaran","ai-pdf","automasi-dokumen","pdf-ke-word","ocr-pdf","word-ke-pdf","excel-ke-pdf","powerpoint-ke-pdf","html-ke-pdf","pdf-a","pdf-ke-powerpoint","pdf-ke-jpg","pdf-ke-png","mampat-pdf"]);
 function drain(){
  while(queue.length){
   const index=queue.findIndex(entry=>running[entry.job.kind]<limits[entry.job.kind]);if(index<0)break;

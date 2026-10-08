@@ -136,3 +136,13 @@ Selesai! Buka URL Netlify anda dan cuba muat naik PDF.
 - Tukar `ADMIN_PASSWORD` kepada kata laluan yang kukuh dan unik.
 - Pastikan `JWT_SECRET` ialah rentetan rawak yang panjang dan rahsia.
 - Jangan pernah commit fail `.env` sebenar ke GitHub (sudah disekat oleh `.gitignore`).
+
+## Kebergantungan naik taraf PDF
+
+Deploy semula backend Docker selepas kemas kini `requirements.txt` (pdf2docx, OpenCV headless, NumPy dan Pillow). Frontend baharu memerlukan backend baharu untuk alat serta API kerja latar.
+
+<<<<<<< HEAD
+AI PDF dimatikan secara lalai. Untuk aktif, tetapkan `GEMINI_API_KEY` dan `GEMINI_MODEL` di Environment backend; model lalai ialah `gemini-2.5-flash-lite`. Dapatkan key di https://aistudio.google.com/api-keys dan guna projek Free Tier. Kuota terhad; projek berbayar boleh mengenakan caj. Jangan letak kunci dalam frontend atau repo. `AI_ALLOW_PUBLIC=false` mewajibkan log masuk. Lihat `NAIK_TARAF_10.md`.
+=======
+AI PDF dimatikan secara lalai. Untuk aktif, tetapkan `OPENAI_API_KEY` dan `OPENAI_MODEL` di Environment backend; model mesti menyokong Responses API dan Structured Outputs. Jangan letak kunci dalam frontend atau repo. `AI_ALLOW_PUBLIC=false` mewajibkan log masuk. Lihat `NAIK_TARAF_10.md`.
+>>>>>>> 9af48a51dc0c79c6aeea3f4f9e7166b4890f9ab2

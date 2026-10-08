@@ -39,3 +39,11 @@ services:
         sync: false
       - key: ADMIN_NAMA
         value: Pentadbir
+
+      # AI PDF: guna projek Google AI Studio Free Tier untuk penggunaan tanpa caj API.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash-lite
+      - key: AI_ALLOW_PUBLIC
+        value: false

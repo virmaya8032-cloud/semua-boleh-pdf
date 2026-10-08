@@ -2,6 +2,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const env = {
+<<<<<<< HEAD
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite',
+=======
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
+  OPENAI_MODEL: process.env.OPENAI_MODEL || '',
+>>>>>>> 9af48a51dc0c79c6aeea3f4f9e7166b4890f9ab2
+  AI_ALLOW_PUBLIC: process.env.AI_ALLOW_PUBLIC === 'true',
   PORT: parseInt(process.env.PORT || "4000", 10),
   NODE_ENV: process.env.NODE_ENV || "development",
   DATABASE_URL: process.env.DATABASE_URL || "",

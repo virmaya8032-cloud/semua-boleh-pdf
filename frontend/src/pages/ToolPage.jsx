@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { toolBySlug } from "../config/tools.js";
 import { Dropzone, FileList } from "../components/Dropzone.jsx";
 import { ProgressBar } from "../components/ui.jsx";
@@ -10,10 +10,14 @@ import PdfEditor from "../components/PdfEditor.jsx";
 import PdfPages from "../components/PdfPages.jsx";
 import InvoiceItems from "../components/InvoiceItems.jsx";
 import FormFields from "../components/FormFields.jsx";
+import PageOrganizer from '../components/PageOrganizer.jsx';
+import CameraScan from '../components/CameraScan.jsx';
+import {WorkflowControls,BatchControls,FindPreview} from '../components/UpgradeControls.jsx';
 import { ikonAlat } from "../config/icons.js";
 
 export default function ToolPage() {
   const { slug } = useParams();
+  const navigate=useNavigate(),location=useLocation();
   const tool = toolBySlug(slug);
   const toast = useToast();
 
@@ -22,6 +26,8 @@ export default function ToolPage() {
   const [peringkat, setPeringkat] = useState("pilih"); // pilih | proses | siap
   const [kemajuan, setKemajuan] = useState(0);
   const [hasil, setHasil] = useState(null);
+  const [resultBlob,setResultBlob]=useState(null),[nextTool,setNextTool]=useState('edit-pdf');
+  const [scanBusy,setScanBusy]=useState(false);
   const [ralat, setRalat] = useState("");
   const [previewUrl, setPreviewUrl] = useState(null);
   const [resultBytes, setResultBytes] = useState(0);
@@ -52,9 +58,9 @@ export default function ToolPage() {
   }, [tool]);
 
   useEffect(() => {
-    setFail([]); setPilihan({}); setHasil(null); setRalat(""); setPeringkat("pilih"); setKemajuan(0); setPreviewUrl(null); setResultBytes(0); setTextResult('');
+    setScanBusy(false);setFail(location.state?.document ? [location.state.document] : []); setPilihan({}); setResultBlob(null); setHasil(null); setRalat(""); setPeringkat("pilih"); setKemajuan(0); setPreviewUrl(null); setResultBytes(0); setTextResult('');
     return()=>currentRequest.current?.abort();
-  }, [slug]);
+  }, [slug,location.key]);
 
   if (!tool) {
     return (
@@ -81,14 +87,17 @@ export default function ToolPage() {
       return gabung.slice(0, maxFiles);
     });
   };
-  const buangFail = (i) => setFail((s) => s.filter((_, idx) => idx !== i));
-  const susunFail = (dari, ke) =>
+  const simpanPenjuruSusunan = order => {if(slug!=='scan-kamera')return;setPilihan(p=>{const old=JSON.parse(p.penjuru||'{}'),next={};order.forEach((from,to)=>{if(old[from])next[to]=old[from];});return {...p,penjuru:JSON.stringify(next)};});};
+  const buangFail = (i) => {simpanPenjuruSusunan(fail.map((_,idx)=>idx).filter(idx=>idx!==i));setFail((s) => s.filter((_, idx) => idx !== i));};
+  const susunFail = (dari, ke) => {
+    const order=fail.map((_,idx)=>idx);const [moved]=order.splice(dari,1);order.splice(ke,0,moved);simpanPenjuruSusunan(order);
     setFail((s) => {
       const salin = [...s];
       const [item] = salin.splice(dari, 1);
       salin.splice(ke, 0, item);
       return salin;
     });
+  };
 
   const ubahPilihan = (key, nilai) => setPilihan((p) => ({ ...p, [key]: nilai }));
 
@@ -110,6 +119,10 @@ export default function ToolPage() {
     }
     const hantaran = { ...lalai, ...(tool.extra || {}), ...pilihan };
     delete hantaran._split;
+    if(slug==='aliran-kerja'&&!JSON.parse(hantaran.langkah||'[]').length){setRalat('Tambah sekurang-kurangnya satu langkah.');return;}
+    if(slug==='urus-halaman'&&!JSON.parse(hantaran.susunan_halaman||'[]').length){setRalat('Pilih sekurang-kurangnya satu halaman.');return;}
+    if(slug==='ai-pdf'&&hantaran.ai_setuju!=='ya'){setRalat('Tandakan persetujuan penggunaan AI dahulu.');return;}
+    if(slug==='scan-kamera'&&Object.values(JSON.parse(hantaran.penjuru||'{}')).some(p=>p.length!==4)){setRalat('Tarik empat penjuru ke tepi kertas atau tekan Reset penjuru.');return;}
     if (pageMode && !String(hantaran[pageKey] || '').trim()) { setRalat('Pilih sekurang-kurangnya satu halaman pada pratonton.'); return; }
     for (const o of tool.options || []) {
       if (o.required && !(slug==='isi-borang-pdf'&&o.key==='data') && !String(hantaran[o.key] ?? "").trim()) { setRalat(`Sila isi ${o.label}.`); return; }
@@ -131,7 +144,7 @@ export default function ToolPage() {
       try {
         const response = await fetch(api.fullUrl(data.muat_turun),{signal:controller.signal});
         if (!response.ok) throw new Error('Muat turun hasil gagal.');
-        const blob = await response.blob(); setResultBytes(blob.size);
+        const blob = await response.blob(); setResultBlob(blob); setResultBytes(blob.size);
         if(data.nama_fail?.endsWith('.txt'))setTextResult(await blob.text());
         setPreviewUrl(URL.createObjectURL(blob));
       } catch { if(controller.signal.aborted)return;setRalat('Pratonton hasil belum tersedia. Gunakan butang muat turun.'); }
@@ -158,7 +171,7 @@ export default function ToolPage() {
   const semula = () => {
     setFail([]);
     setPilihan({});
-    setHasil(null);
+    setHasil(null); setResultBlob(null);
     setKemajuan(0);
     setRalat("");
     setPeringkat("pilih");
@@ -172,7 +185,7 @@ export default function ToolPage() {
   })();
 
   return (
-    <div className={`mx-auto ${tool.editor || pageMode ? 'max-w-6xl' : 'max-w-3xl'} px-4 py-10`}>
+    <div className={`mx-auto ${tool.editor || pageMode || slug==='urus-halaman' ? 'max-w-6xl' : 'max-w-3xl'} px-4 py-10`}>
       <Link to="/alat" className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-merah">
         <ArrowLeft size={16} /> Semua Alat
       </Link>
@@ -212,7 +225,12 @@ export default function ToolPage() {
           <>
             {!tool.noFile && <Dropzone compact={fail.length>0} accept={tool.accept} multiple={tool.multiple} onFiles={(files) => { tambahFail(files); if (tool.editor || pageMode || slug==='isi-borang-pdf') setPilihan({}); }} />}
             {tool.editor === "form" && <p className="mt-2 text-sm text-gray-500">Muat naik PDF sebagai templat, atau terus tambah medan pada halaman A4 kosong di bawah.</p>}
-            {tool.editor && (fail.length > 0 || tool.editor === "form") && <PdfEditor key={`${slug}-${fail[0]?.name || "blank"}-${fail[0]?.lastModified || ''}`} file={fail[0]} mode={tool.editor} onSave={proses} initialKind={tool.initialKind} fieldValues={pilihan.field_values} onFieldChange={value=>ubahPilihan('field_values',value)} value={pilihan[tool.editor === "form" ? "medan" : "anotasi"]} onChange={(value) => ubahPilihan(tool.editor === "form" ? "medan" : "anotasi", value)} />}
+            {tool.editor && (fail.length > 0 || tool.editor === "form") && <PdfEditor key={`${slug}-${fail[0]?.name || "blank"}-${fail[0]?.lastModified || ''}`} file={fail[0]} mode={tool.editor} onSave={proses} initialKind={tool.initialKind} initialPictureFile={location.state?.signature} fieldValues={pilihan.field_values} onFieldChange={value=>ubahPilihan('field_values',value)} value={pilihan[tool.editor === "form" ? "medan" : "anotasi"]} onChange={(value) => ubahPilihan(tool.editor === "form" ? "medan" : "anotasi", value)} />}
+            {slug==='urus-halaman'&&fail.length>0&&<PageOrganizer key={fail.map(f=>f.name+f.lastModified).join('|')} files={fail} value={pilihan.susunan_halaman} onChange={value=>ubahPilihan('susunan_halaman',value)}/>}
+            {slug==='scan-kamera'&&<CameraScan files={fail} onFiles={tambahFail} value={pilihan.penjuru} onBusy={setScanBusy} onChange={value=>ubahPilihan('penjuru',value)}/>}
+            {slug==='ai-pdf'&&<p className="mt-3 text-sm text-gray-600">Secara lalai, AI memerlukan <Link className="text-merah underline" to="/log-masuk">log masuk</Link> dan pengaktifan oleh pentadbir. Jawapan akan mempunyai petikan serta rujukan halaman.</p>}
+            {slug==='aliran-kerja'&&fail.length>0&&<WorkflowControls value={pilihan.langkah} onChange={value=>ubahPilihan('langkah',value)}/>}
+            {slug==='proses-kelompok'&&fail.length>0&&<BatchControls value={pilihan} onChange={value=>setPilihan(p=>({...p,...value}))}/>}
             {pageMode && fail[0] && <PdfPages file={fail[0]} action={pageMode} value={pilihan[pageKey]} angle={pilihan.sudut||90} onChange={value=>ubahPilihan(pageKey,value)} />}
 
             {fail.length > 0 && (
@@ -230,7 +248,7 @@ export default function ToolPage() {
                   {shownOptions.map((o) => (
                     <label key={o.key} className="block">
                       <span className="mb-1 block text-sm font-semibold text-gray-700">{o.label}</span>
-                      {o.jenis === "select" ? (
+                      {o.jenis === 'checkbox' ? <input className="ml-2" type="checkbox" checked={pilihan[o.key]==='ya'} onChange={e=>ubahPilihan(o.key,e.target.checked?'ya':'tidak')}/> : o.jenis === "select" ? (
                         <select
                           className="medan"
                           value={pilihan[o.key] ?? o.default ?? o.pilihan?.[0]?.nilai ?? ""}
@@ -259,9 +277,10 @@ export default function ToolPage() {
               </div>
             )}
 
+            {slug==='cari-ganti'&&fail[0]&&<FindPreview file={fail[0]} value={{huruf:'tidak',seluruh:'ya',...pilihan}}/>}
             {ralat && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-merah">{ralat}</p>}
 
-            <button onClick={proses} disabled={fail.length < minFiles} className="btn-utama mt-6 w-full text-base">
+            <button onClick={proses} disabled={fail.length < minFiles || (slug==='scan-kamera' && scanBusy)} className="btn-utama mt-6 w-full text-base">
               {tool.editor ? 'Simpan & pratonton PDF' : tool.noFile ? "Cipta PDF" : tool.nama}
             </button>
           </>
@@ -286,6 +305,7 @@ export default function ToolPage() {
             <h2 className="mt-4 font-papar text-xl font-bold">Fail berjaya diproses!</h2>
             <p className="mt-1 text-sm text-gray-500">Semak hasil dan klik Muat Turun untuk menyimpan ke komputer anda.</p>
             {resultBytes>0&&<p className="mt-2 text-sm font-semibold">Saiz hasil: {(resultBytes/1024).toFixed(1)} KB{['mampat-pdf','optimize-pdf'].includes(slug)&&fail[0]?.size>0&&` · ${resultBytes<fail[0].size?'Berkurang':'Bertambah'} ${Math.abs((1-resultBytes/fail[0].size)*100).toFixed(1)}%`}</p>}
+            {hasil?.nota&&<p className="mx-auto mt-3 max-w-xl rounded-lg bg-blue-50 p-3 text-sm" role="status">{hasil.nota}</p>}
             {ralat&&<p className="mt-2 text-sm text-amber-700">{ralat}</p>}
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <button onClick={muatTurun} className="btn-utama">
@@ -296,9 +316,11 @@ export default function ToolPage() {
               </button>
               <button onClick={()=>{setRalat('');setPeringkat('pilih');}} className="btn-lembut">{tool.editor?'Sambung edit':'Ubah tetapan'}</button>
             </div>
+            {resultBlob&&labelMuatTurun==='PDF'&&<section className="mt-5 rounded-xl border bg-gray-50 p-4"><h3 className="font-bold">Teruskan dengan hasil ini</h3><div className="mt-3 flex flex-wrap justify-center gap-2"><select aria-label="Alat seterusnya" className="medan max-w-xs" value={nextTool} onChange={e=>setNextTool(e.target.value)}>{['edit-pdf','tandatangan-pdf','mampat-sasaran','mampat-pdf','urus-halaman','isi-borang-pdf','cari-ganti','aliran-kerja','ocr-pdf','pdf-ke-word','pdf-ke-teks','ai-pdf'].map(s=><option key={s} value={s}>{toolBySlug(s).nama}</option>)}</select><button className="btn-utama" onClick={()=>navigate(`/alat/${nextTool}`,{state:{document:new File([resultBlob],hasil.nama_fail,{type:'application/pdf'})}})}>Sambung tanpa pilih fail semula</button></div></section>}
+            {previewUrl&&labelMuatTurun==='PNG'&&<><div className="mx-auto mt-5 max-w-lg rounded border p-4" style={{background:'repeating-conic-gradient(#eee 0% 25%,white 0% 50%) 0 / 20px 20px'}}><img src={previewUrl} alt="Tandatangan dengan latar telus" className="mx-auto max-h-72 max-w-full"/></div>{resultBlob&&<button className="btn-lembut mt-3" onClick={()=>navigate('/alat/tandatangan-pdf',{state:{signature:new File([resultBlob],hasil.nama_fail,{type:'image/png'})}})}>Gunakan tandatangan ini — pilih PDF</button>}</>}
             {previewUrl && labelMuatTurun==='PDF' && <iframe title="Pratonton PDF hasil" src={previewUrl} className="mt-6 h-[650px] w-full rounded-xl border bg-gray-100" />}
             {previewUrl&&labelMuatTurun==='HTML'&&<iframe title="Laporan perbandingan PDF" sandbox="" src={previewUrl} className="mt-6 h-[700px] w-full rounded-xl border bg-gray-100"/>}
-            {textResult&&<section className="mt-6 text-left"><div className="mb-3 flex items-center justify-between"><h2 className="font-bold">Teks mengikut halaman</h2><button type="button" className="btn-lembut text-sm" onClick={async()=>{try{await navigator.clipboard.writeText(textResult);toast.berjaya('Teks disalin.');}catch{setRalat('Pilih dan salin teks dalam pratonton secara manual.');}}}>Salin teks</button></div><pre className="max-h-[650px] overflow-auto whitespace-pre-wrap rounded-xl border bg-gray-50 p-5 font-mono text-sm leading-relaxed">{textResult}</pre></section>}
+            {textResult&&<section className="mt-6 text-left"><div className="mb-3 flex items-center justify-between"><h2 className="font-bold">{slug==='ai-pdf'?'Jawapan AI dan rujukan halaman':'Teks mengikut halaman'}</h2><button type="button" className="btn-lembut text-sm" onClick={async()=>{try{await navigator.clipboard.writeText(textResult);toast.berjaya('Teks disalin.');}catch{setRalat('Pilih dan salin teks dalam pratonton secara manual.');}}}>Salin teks</button></div><pre className="max-h-[650px] overflow-auto whitespace-pre-wrap rounded-xl border bg-gray-50 p-5 font-mono text-sm leading-relaxed">{textResult}</pre></section>}
           </div>
         )}
           </>
